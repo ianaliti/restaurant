@@ -19,28 +19,26 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   if (!dish) return notFound();
 
   return (
-    <div className="flex flex-col gap-4 p-8 justify-center">
-      <div className="flex items-center w-md justify-center">
-        <Image
-          src={dish.image}
-          alt={`${dish.name} Image`}
-          width={500}
-          height={200}
-          objectFit="cover"
-        />
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="relative w-full overflow-hidden rounded-2xl shadow-sm aspect-[4/3]">
+          <Image
+            src={dish.image}
+            alt={`${dish.name} Image`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
+        <div className="flex flex-col gap-4">
+          <p className="text-2xl font-bold">{dish.name}</p>
+          <p className="text-primary font-semibold">{`$${dish.price.toFixed(2)}`}</p>
+          <p className="text-muted-foreground leading-relaxed">{dish.description}</p>
+          <Button className="mt-2 h-12 rounded-3xl" onClick={() => addItem(dish)}>
+            <Link href="/cart">Ajouter au panier</Link>
+          </Button>
+        </div>
       </div>
-
-      <div>
-        <p>{dish.name}</p>
-        <p>Price: ${dish.price.toFixed(2)}</p>
-        <p>{dish.description}</p>
-      </div>
-
-      <Button onClick={() => addItem(dish)}>
-        <Link href="/cart">
-        Add to Cart
-        </Link>
-        </Button>
     </div>
   );
 }

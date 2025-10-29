@@ -20,10 +20,12 @@ const restaurant = data.find((resto) => resto.id === idNumber);
   console.log(restaurant);
  
   return (
-    <div className='flex flex-col gap-4 p-8'>
-      <p>{restaurant.name}</p>
-        <p>{restaurant.description}</p>
-         <div className="grid grid-cols-4 gap-6 w-full">
+    <div className='max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6'>
+      <div className='flex flex-col gap-2'>
+        <p className='text-2xl sm:text-3xl font-bold'>{restaurant.name}</p>
+        <p className='text-muted-foreground max-w-3xl'>{restaurant.description}</p>
+      </div>
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {
                 restaurant.dishes.map((dish) => (
                     <Link href={`/dish/${dish.id}`} key={dish.id}>

@@ -15,8 +15,8 @@ type CardProps = Restaurant | Dish;
 
 const CardComponent = ({ name, image, address }: CardProps) => {
   return (
-    <Card className="relative w-[320px] h-[300px] rounded-2xl overflow-hidden shadow-lg cursor-pointer group">
-      <CardHeader>
+    <Card className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden shadow-md cursor-pointer group p-0 border-0">
+      <CardHeader className="p-0 h-full">
         <Image
           src={image}
           alt={`${name} Image`}
@@ -25,6 +25,8 @@ const CardComponent = ({ name, image, address }: CardProps) => {
           sizes="min-width: 362px) 100vw, 33vw"
         />
       </CardHeader>
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
       <CardContent className="absolute bottom-0 left-0 p-4 text-white z-10">
         <p className="text-lg font-semibold truncate">{name}</p>
         {address && (
