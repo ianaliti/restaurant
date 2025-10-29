@@ -7,12 +7,12 @@ const data: RestaurantWithDishes[] = [
     description:
       "Authentic Italian cuisine in an elegant atmosphere with traditional recipes passed down through generations.",
     address: "123 Pasta Avenue, Little Italy, NY 10013",
-    phone: "+1 212-555-0123",
-    website: "https://lamaisonitalienne.com",
+    city: "",
     image:
       "https://plus.unsplash.com/premium_photo-1672242676660-923c3bd446d7?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
     cuisine: "Italian",
-    rating: 4.8,
+    codePostal: 56000,
+    email: "",
     dishes: [
       {
         id: 101,
@@ -67,12 +67,12 @@ const data: RestaurantWithDishes[] = [
     description:
       "Contemporary Japanese cuisine featuring the freshest seafood and innovative fusion rolls.",
     address: "456 Ocean Drive, Miami Beach, FL 33139",
-    phone: "+1 305-555-0456",
-    website: "https://sushimaster.com",
     image:
       "https://images.unsplash.com/photo-1669283723966-3437546829cc?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=765",
     cuisine: "Japanese",
-    rating: 4.9,
+    city: "",
+    codePostal: 56000,
+    email: "",
     dishes: [
       {
         id: 201,
@@ -124,12 +124,12 @@ const data: RestaurantWithDishes[] = [
     description:
       "A journey through Indian flavors featuring traditional dishes with a modern twist.",
     address: "789 Curry Lane, San Francisco, CA 94110",
-    phone: "+1 415-555-0789",
-    website: "https://spiceroute.com",
     image:
       "https://images.unsplash.com/photo-1554980291-c3e7cea75872?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=698",
     cuisine: "Indian",
-    rating: 4.7,
+    city: "",
+    codePostal: 56000,
+    email: "",
     dishes: [
       {
         id: 301,

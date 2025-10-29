@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
+import AdminSidebar from "@/app/admin/components/AdminSidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,12 +25,16 @@ export default function AdminLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="border-b bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <span className="font-semibold">Admin</span>
-            <nav className="text-sm text-muted-foreground">Dashboard</nav>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center">
+            <span className="font-semibold">Back Office</span>
           </div>
         </div>
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">{children}</main>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <div className="flex gap-6">
+            <AdminSidebar />
+            <main className="flex-1">{children}</main>
+          </div>
+        </div>
       </body>
     </html>
   );

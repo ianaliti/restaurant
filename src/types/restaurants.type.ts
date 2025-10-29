@@ -1,13 +1,14 @@
 export interface Restaurant {
   id: number;
   name: string;
-  address?: string;
+  address: string;
   image: string;
-  description?: string;
-  phone?: string;
-  website?: string;
-  cuisine?: string;
-  rating?: number; 
+  description: string;
+  cuisine: string;
+  codePostal: number;
+  email: string;
+  city: string;
+  quantity? : number;
 }
 
 export interface Dish {
