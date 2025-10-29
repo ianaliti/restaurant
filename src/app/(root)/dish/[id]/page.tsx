@@ -34,7 +34,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
           <p className="text-2xl font-bold">{dish.name}</p>
           <p className="text-primary font-semibold">{`$${dish.price.toFixed(2)}`}</p>
           <p className="text-muted-foreground leading-relaxed">{dish.description}</p>
-          <Button className="mt-2 h-12 rounded-3xl" onClick={() => addItem(dish)}>
+          <Button className="mt-2 h-12 rounded-3xl" onClick={() => addItem(dish)} >
             <Link href="/cart">Ajouter au panier</Link>
           </Button>
         </div>
