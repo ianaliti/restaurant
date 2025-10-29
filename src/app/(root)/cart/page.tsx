@@ -16,8 +16,8 @@ export default function page() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="text-2xl font-bold mb-6">Panier</h1>
       <div className="grid grid-cols-1 gap-6">
-        {items.map((item) => (
-          <div key={item.id} className="grid grid-cols-[96px_1fr_auto] items-center gap-4 p-4 rounded-xl border bg-white shadow-xs">
+        {items.map((item, id) => (
+          <div key={`${item.id}-${id}`} className="grid grid-cols-[96px_1fr_auto] items-center gap-4 p-4 rounded-xl border bg-white shadow-xs">
             <div className="relative w-24 h-24 overflow-hidden rounded-lg">
               <Image src={item.image} alt={item.name} fill className="object-cover" />
             </div>

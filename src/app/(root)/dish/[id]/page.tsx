@@ -1,7 +1,7 @@
 "use client";
 import { use } from "react";
 import { notFound } from "next/navigation";
-import data from "@/mock-data/data.js";
+import data from "@/mock-data/data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/app/store/cartStore";

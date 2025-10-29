@@ -1,28 +1,41 @@
 export interface Restaurant {
-    id: number;
-    name: string;
-    address?: string;
-    image: string;
+  id: number;
+  name: string;
+  address?: string;
+  image: string;
+  description?: string;
+  phone?: string;
+  website?: string;
+  cuisine?: string;
+  rating?: number; 
 }
 
 export interface Dish {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    price: number;
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  price: number;
+}
+
+export interface DishExtended extends Dish {
+  category?: string;
+  isSpicy?: boolean;
+  isVegetarian?: boolean;
+}
+
+export interface RestaurantWithDishes extends Restaurant {
+  dishes: DishExtended[];
 }
 
 export interface Profile {
-    id: number;
-    username: string;
-    email: string;
+  id: number;
+  username: string;
+  email: string;
 }
 
 export interface Command {
-    id: number;
-    dishId: number;
-    quantity: number;
-    title: string;
-    price: number;
+  id: string;
+  date: string;
+  total: number;
 }
