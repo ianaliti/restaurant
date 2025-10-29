@@ -2,7 +2,7 @@
 import { use } from 'react'
 import { notFound } from 'next/navigation';
 import data from '@/mock-data/data.js';
-import Card from '@/components/card/Card';
+import CardComponent from '@/components/card/CardComponent';
 import Link from 'next/link';
  
 export default function page({
@@ -23,11 +23,11 @@ const restaurant = data.find((resto) => resto.id === idNumber);
     <div className='flex flex-col gap-4 p-8'>
       <p>{restaurant.name}</p>
         <p>{restaurant.description}</p>
-         <div className="flex flex-wrap justify-center space-x-4 gap-4">
+         <div className="grid grid-cols-4 gap-6 w-full">
             {
                 restaurant.dishes.map((dish) => (
                     <Link href={`/dish/${dish.id}`} key={dish.id}>
-                        <Card
+                        <CardComponent
                             key={dish.id}
                             name={dish.name}
                             id={dish.id}
