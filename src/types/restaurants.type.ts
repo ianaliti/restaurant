@@ -1,32 +1,39 @@
-export interface Restaurant {
-  id: number;
-  name: string;
-  address: string;
-  image: string;
-  description: string;
-  cuisine: string;
-  codePostal: number;
-  email: string;
-  city: string;
-  quantity? : number;
-}
-
 export interface Dish {
   id: number;
   name: string;
   description: string;
-  image: string;
   price: number;
+  image: string;
+  category: string;
+  isSpicy: boolean;
+  isVegetarian: boolean;
+  ingredients: string[];
+  allergies: string[];
+  calories: number;
 }
 
-export interface DishExtended extends Dish {
-  category?: string;
-  isSpicy?: boolean;
-  isVegetarian?: boolean;
+export interface Restaurant {
+  id: number;
+  name: string;
+  description: string;
+  address: string;
+  phone: string;
+  website: string;
+  image: string;
+  cuisine: string;
+  rating: number;
+  priceRange: string;
+  openingHours: string;
+  deliveryTime: string;
+  minimumOrder: number;
+  deliveryFee: number;
+  isDeliveryAvailable: boolean;
+  isParkingAvailable: boolean;
+  isReservationRequired: boolean;
 }
 
 export interface RestaurantWithDishes extends Restaurant {
-  dishes: DishExtended[];
+  dishes: Dish[];
 }
 
 export interface Profile {
@@ -41,11 +48,7 @@ export interface Command {
   total: number;
 }
 
-export interface CartItem {
-  id: number; 
-  name: string;
-  description: string;
-  image: string;
-  price: number;
+export interface CartItem extends Dish {
   quantity: number;
+  restaurantId: number;
 }

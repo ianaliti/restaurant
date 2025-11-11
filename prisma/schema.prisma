@@ -1,0 +1,86 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  password  String
+  name      String
+  role      String  @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Restaurant {
+  id        Int     @id @default(autoincrement())
+  name      String
+  description String
+  address   String
+  phone     String
+  website   String
+  image     String
+  cuisine   String
+  rating    Float
+  priceRange String
+  openingHours String
+  deliveryTime String
+  minimumOrder Float
+  deliveryFee Float
+  isDeliveryAvailable Boolean @default(true)
+  isParkingAvailable Boolean @default(false)
+  isReservationRequired Boolean @default(false)
+  dishes    Dish[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Dish {
+  id        Int     @id @default(autoincrement())
+  name      String
+  description String
+  price     Float
+  image     String
+  category  String
+  isSpicy   Boolean @default(false)
+  isVegetarian Boolean @default(false)
+  ingredients String[]
+  allergies String[]
+  calories  Int
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  items     OrderItem[]
+  status    String  @default("pending")
+  totalPrice Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id    Int     @id @default(autoincrement())
+  order Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int
+  dish  Dish    @relation(fields: [dishId], references: [id])
+  dishId Int
+  quantity Int
+  price Float
+}

@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Restaurant} from '@/types/restaurants.type';
+import { RestaurantWithDishes } from '@/types/restaurants.type';
 
 
 interface RestoState {
   restarantList: {
-    items: Restaurant[];
+    items: RestaurantWithDishes[];
   };
-  addToRestoList: (item: Restaurant) => void;
+  addToRestoList: (item: RestaurantWithDishes) => void;
   removeItem: (id: number) => void;
 }
 
@@ -17,7 +17,7 @@ export const useCartStore = create<RestoState>() (
       restarantList: {
         items: [],
       },
-      addToRestoList: (item: Restaurant) =>
+      addToRestoList: (item: RestaurantWithDishes) =>
         set((state) => {
           const existing = state.restarantList.items.find(i => i.id === item.id);
           if (existing) {
@@ -28,7 +28,7 @@ export const useCartStore = create<RestoState>() (
               }
             };
           }
-          const newItem: Restaurant = { id: item.id, name: item.name, description: item.description, image: item.image, address: item.address, email: item.email, cuisine: item.cuisine, codePostal: item.codePostal, city: item.city, quantity: 1  };
+          const newItem: RestaurantWithDishes = { id: item.id, name: item.name, description: item.description, image: item.image, address: item.address, email: item.email, cuisine: item.cuisine, codePostal: item.codePostal, city: item.city, quantity: 1  };
           return {
             ...state,
             restarantList: { items: [...state.restarantList.items, newItem] }
