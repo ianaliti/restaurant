@@ -6,15 +6,23 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/app/store/cartStore";
 import Link from "next/link";
+import { Dish } from "@/types/restaurants.type";
 
 export default function page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const idNumber = Number(id);
-  const allDishes = data.flatMap((resto) => resto.dishes);
+  const allDishes: (Dish & { restaurantId: number })[] = data.flatMap((resto) =>
+    resto.dishes.map((dish) => ({
+      ...dish,
+      restaurantId: resto.id,
+    }))
+  );
 
-  const addItem = useCartStore(state => state.addItem);
+  const addItem = useCartStore((state) => state.addItem);
 
-  const dish = allDishes.find((d) => d.id === idNumber);
+  const dish: (Dish & { restaurantId: number }) | undefined = allDishes.find(
+    (d) => d.id === idNumber
+  );
 
   if (!dish) return notFound();
 
@@ -32,9 +40,16 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
         </div>
         <div className="flex flex-col gap-4">
           <p className="text-2xl font-bold">{dish.name}</p>
-          <p className="text-primary font-semibold">{`$${dish.price.toFixed(2)}`}</p>
-          <p className="text-muted-foreground leading-relaxed">{dish.description}</p>
-          <Button className="mt-2 h-12 rounded-3xl" onClick={() => addItem(dish)} >
+          <p className="text-primary font-semibold">{`$${dish.price.toFixed(
+            2
+          )}`}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {dish.description}
+          </p>
+          <Button
+            className="mt-2 h-12 rounded-3xl"
+            onClick={() => addItem(dish)}
+          >
             <Link href="/cart">Ajouter au panier</Link>
           </Button>
         </div>

@@ -1,14 +1,12 @@
-import React from 'react'
-import { Command } from '@/types/restaurants.type'
+'use client'
 
-const orders: Command[] = [
-  { id: 'CMD-20032023', total: 15.2, date: '2023-03-20' },
-  { id: 'CMD-21032023', total: 12.6, date: '2023-03-21' },
-  { id: 'CMD-22032023', total: 55, date: '2023-03-22' },
-  { id: 'CMD-23032023', total: 6.8, date: '2023-03-23' },
-]
+import React from 'react'
+import { useOrderStore } from '@/app/store/orderStore'
 
 const page: React.FC = () => {
+  const orders = useOrderStore((state) => state.orders);
+
+
   return (
     <div className='max-w-3xl mx-auto px-4 sm:px-6 py-8'>
       <h1 className='text-2xl font-bold mb-6'>Commandes</h1>

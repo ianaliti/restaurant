@@ -42,13 +42,14 @@ export interface Profile {
   email: string;
 }
 
-export interface Command {
-  id: string;
-  date: string;
-  total: number;
-}
-
 export interface CartItem extends Dish {
   quantity: number;
   restaurantId: number;
+}
+
+export interface Order {
+  id: number;
+  date: string;
+  total: number;
+  items: CartItem[];
 }

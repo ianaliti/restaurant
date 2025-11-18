@@ -38,19 +38,15 @@ export default function RegisterPage() {
 
     try {
       await register(email, password, name, role);
-      // Get the actual registered user from the store
       const user = useAuthStore.getState().user;
       
-      // Debug: log the role to verify
       console.log('Registered user role:', user?.role, 'Selected role:', role);
       
-      // Redirect based on the actual user role from the store
       if (user?.role === 'restaurateur') {
         router.push('/restaurant');
       } else if (user?.role === 'admin') {
         router.push('/admin');
       } else {
-        // Default to home page for customers
         router.push('/');
       }
     } catch (err) {

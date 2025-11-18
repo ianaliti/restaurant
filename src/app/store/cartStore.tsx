@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Dish } from '@/types/restaurants.type';
+import { Order } from '@/types/restaurants.type';
 
 
 interface CartState {
@@ -11,6 +12,7 @@ interface CartState {
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
+  createOrder: () => Order;
 }
 
 export const useCartStore = create<CartState>() (
@@ -46,6 +48,20 @@ export const useCartStore = create<CartState>() (
         get().items.reduce((total, item) => total + (item.price * item.quantity), 0),
       getTotalItems: () =>
         get().items.reduce((total, item) => total + item.quantity, 0),
+      createOrder: () => {
+        const items = get().items;
+        const total = get().getTotalPrice();
+
+        const order : Order = {
+          id: Math.floor(Math.random() * 1000000),
+          date: new Date().toISOString(),
+          total,
+          items,
+        }
+
+        set({ items: [] });
+        return order;
+      },
     }),
     {
       name: "cart-storage",

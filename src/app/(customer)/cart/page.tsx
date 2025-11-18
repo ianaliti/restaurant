@@ -1,9 +1,12 @@
 'use client';
 
 import { useCartStore } from "@/app/store/cartStore";
+import { useOrderStore } from "@/app/store/orderStore";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function page() {
   const items = useCartStore(state => state.items || []);
@@ -11,23 +14,31 @@ export default function page() {
   const removeItem = useCartStore(state => state.removeItem);
   const clearCart = useCartStore(state => state.clearCart);
 
-  const increment = (id: number) => {
+  const createOrder = useCartStore(state => state.createOrder);
+  const addOrder = useOrderStore((state) => state.addOrder);
+  const totalPrice = useCartStore(state => state.getTotalPrice());
+  
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const addDish = (id: number) => {
     const item = items.find(i => i.id === id);
     if (item) {
       updateQuantity(id, (item.quantity || 1) + 1);
     }
   };
 
-  const decrement = (id: number) => {
+  const deleteDish = (id: number) => {
     const item = items.find(i => i.id === id);
     if (item) {
       updateQuantity(id, Math.max(0, (item.quantity || 1) - 1));
     }
   };
 
-  const totalPrice = items.reduce((sum, i) => sum + (i.price * (i.quantity || 1)), 0);
-
-  console.log("Total Price:", totalPrice);
+  const handleCreateOrder = () => {
+    const newOrder = createOrder();
+    addOrder(newOrder);  
+    setShowSuccess(true);
+  }
 
   console.log("Cart Items:", items);
 
@@ -45,9 +56,9 @@ export default function page() {
                 <p className="font-medium truncate">{item.name}</p>
                 <p className="text-sm text-muted-foreground truncate">{item.description}</p>
                 <div className="mt-2 inline-flex items-center gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => decrement(item.id)}>-</Button>
+                  <Button variant="secondary" size="sm" onClick={() => deleteDish(item.id)}>-</Button>
                   <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
-                  <Button variant="secondary" size="sm" onClick={() => increment(item.id)}>+</Button>
+                  <Button variant="secondary" size="sm" onClick={() => addDish(item.id)}>+</Button>
                   <Button variant="ghost" size="sm" className="text-red-600" onClick={() => removeItem(item.id)}>Remove</Button>
                 </div>
               </div>
@@ -61,7 +72,14 @@ export default function page() {
         <p className="text-lg font-semibold">Total: {`$${totalPrice.toFixed(2)}`}</p>
         <div className="flex items-center gap-3">
           <Button variant="secondary" className="h-12 rounded-3xl px-6" onClick={clearCart}>Vider</Button>
-          <Button className="h-12 rounded-3xl px-8">Payer</Button>
+          <Button className="h-12 rounded-3xl px-8" onClick={handleCreateOrder}>Payer</Button>
+
+          {
+            showSuccess && (
+             <SuccessMessage
+                message="Order Created!"
+                onClose={() => setShowSuccess(false) }/>
+              )}
         </div>
       </div>
     </div>
