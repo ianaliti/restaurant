@@ -12,7 +12,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   const idNumber = Number(id);
   const allDishes = data.flatMap((resto) => resto.dishes);
 
-  const addItem = useCartStore(state => state.addToCartList);
+  const addItem = useCartStore(state => state.addItem);
 
   const dish = allDishes.find((d) => d.id === idNumber);
 
@@ -21,7 +21,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="relative w-full overflow-hidden rounded-2xl shadow-sm aspect-[4/3]">
+        <div className="relative w-full overflow-hidden rounded-2xl shadow-sm">
           <Image
             src={dish.image}
             alt={`${dish.name} Image`}

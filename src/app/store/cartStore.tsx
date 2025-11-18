@@ -42,7 +42,6 @@ export const useCartStore = create<CartState>() (
           ).filter(i => i.quantity > 0),
         })),
       clearCart: () => set({ items: [] }),
-      // Getters
       getTotalPrice: () =>
         get().items.reduce((total, item) => total + (item.price * item.quantity), 0),
       getTotalItems: () =>

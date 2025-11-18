@@ -6,13 +6,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function page() {
-  const items = useCartStore(state => state.cartlist.items);
-  const increment = useCartStore(state => state.incrementQuantity);
-  const decrement = useCartStore(state => state.decrementQuantity);
+  const items = useCartStore(state => state.items || []);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
   const removeItem = useCartStore(state => state.removeItem);
   const clearCart = useCartStore(state => state.clearCart);
 
-  const totalPrice = items.reduce((sum, i) => sum + i.price, 0);
+  const increment = (id: number) => {
+    const item = items.find(i => i.id === id);
+    if (item) {
+      updateQuantity(id, (item.quantity || 1) + 1);
+    }
+  };
+
+  const decrement = (id: number) => {
+    const item = items.find(i => i.id === id);
+    if (item) {
+      updateQuantity(id, Math.max(0, (item.quantity || 1) - 1));
+    }
+  };
+
+  const totalPrice = items.reduce((sum, i) => sum + (i.price * (i.quantity || 1)), 0);
 
   console.log("Total Price:", totalPrice);
 

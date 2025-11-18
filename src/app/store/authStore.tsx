@@ -28,6 +28,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  updateProfile: (name: string, email: string) => Promise<void>;
   
   isAdmin: () => boolean;
   isRestaurateur: () => boolean;
@@ -160,6 +161,52 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => {
         set({ error: null });
+      },
+
+      updateProfile: async (name: string, email: string) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const currentUser = get().user;
+          if (!currentUser) {
+            throw new Error('User not logged in');
+          }
+
+          const users = getMockUsers();
+          const userIndex = users.findIndex(u => u.id === currentUser.id);
+          
+          if (userIndex === -1) {
+            throw new Error('User not found');
+          }
+
+          const emailTaken = users.find(u => u.email === email && u.id !== currentUser.id);
+          if (emailTaken) {
+            throw new Error('Email already in use');
+          }
+
+          users[userIndex] = {
+            ...users[userIndex],
+            name,
+            email,
+          };
+          saveMockUsers(users);
+
+          set({
+            user: {
+              ...currentUser,
+              name,
+              email,
+            },
+            isLoading: false,
+            error: null,
+          });
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Update failed',
+          });
+          throw error;
+        }
       },
 
       isAdmin: () => {
