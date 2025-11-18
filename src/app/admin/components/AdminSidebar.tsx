@@ -2,10 +2,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/store/authStore";
+import { Button } from "@/components/ui/button";
 
 const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/restaurateurs", label: "Restaurateurs" },
+  { href: "/admin", label: "Restaurants" },
 ];
 
 export default function AdminSidebar() {
@@ -19,7 +19,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-48 shrink-0 border-r bg-white h-[calc(100vh-56px)] flex flex-col">
+    <aside className="w-50 shrink-0 border-r bg-white h-[calc(100vh-56px)] flex flex-col justify-start">
       <div className="p-3">
         <nav className="flex flex-col gap-2">
           {links.map((l) => {
@@ -36,13 +36,13 @@ export default function AdminSidebar() {
           })}
         </nav>
       </div>
-      <div className="mt-auto p-3 text-xs text-muted-foreground">
-        <button 
-          className="flex items-center gap-2 hover:underline w-full" 
+      <div className="mt-auto p-0">
+        <Button 
           onClick={handleLogout}
+          variant={"outline"}
         >
-          <span>Déconnexion</span>
-        </button>
+          Déconnexion
+        </Button>
       </div>
     </aside>
   );

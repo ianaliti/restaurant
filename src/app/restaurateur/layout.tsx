@@ -12,12 +12,7 @@ export default function RestaurateurLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-       <div className="border-b bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center">
-            <span className="font-semibold">Back Office</span>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-7xl mx-auto py-8 w-auto">
           <div className="flex gap-6">
             <RestoSidebar />
             <main className="flex-1">{children}</main>

@@ -34,6 +34,7 @@ export interface Restaurant {
 
 export interface RestaurantWithDishes extends Restaurant {
   dishes: Dish[];
+  quantity?: number;
 }
 
 export interface Profile {

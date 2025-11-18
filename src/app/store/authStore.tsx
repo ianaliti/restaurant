@@ -29,6 +29,7 @@ interface AuthState {
   logout: () => void;
   clearError: () => void;
   updateProfile: (name: string, email: string) => Promise<void>;
+  deleteUser: (userId: string) => Promise<void>;
   
   isAdmin: () => boolean;
   isRestaurateur: () => boolean;
@@ -70,6 +71,14 @@ const getMockUsers = (): UserWithPassword[] => {
 const saveMockUsers = (users: UserWithPassword[]) => {
   if (typeof window === 'undefined') return;
   localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(users));
+};
+
+// Helper function to get all restaurateurs (exported for use in admin page)
+export const getAllRestaurateurs = (): User[] => {
+  const users = getMockUsers();
+  return users
+    .filter((u) => u.role === 'restaurateur')
+    .map(({ password, ...user }) => user);
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -222,6 +231,16 @@ export const useAuthStore = create<AuthState>()(
       isCustomer: () => {
         const user = get().user;
         return user?.role === 'customer';
+      },
+
+      deleteUser: async (userId: string) => {
+        try {
+          const users = getMockUsers();
+          const filteredUsers = users.filter((u) => u.id !== userId);
+          saveMockUsers(filteredUsers);
+        } catch (error) {
+          throw new Error('Failed to delete user');
+        }
       },
     }),
     {

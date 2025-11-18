@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/app/store/authStore";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function Page() {
   const { register } = useAuthStore();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -16,12 +19,18 @@ export default function Page() {
     email: '',
     password: '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.password) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
     try {
       await register(formData.email, formData.password, formData.name, 'restaurateur');
-      alert('Restaurateur créé avec succès!');
       setFormData({
         name: '',
         address: '',
@@ -30,10 +39,12 @@ export default function Page() {
         email: '',
         password: '',
       });
+      setShowSuccess(true);
     } catch (error) {
       alert('Erreur lors de la création du restaurateur');
     }
   };
+
 
   return (
     <ProtectedRoute requiredRole="admin">
@@ -79,7 +90,26 @@ export default function Page() {
           <Button type="submit" className="h-9 rounded-md bg-primary px-4 text-white text-sm">
             Ajouter
           </Button>
+          {showSuccess && (
+            <SuccessMessage
+              message="Restaurateur ajouté avec succès!"
+              onClose={() => {
+                setShowSuccess(false);
+                router.push('/admin');
+              }}
+            />
+          )}
         </form>
+        
+        <div className="mt-4">
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/admin')}
+            className="h-9 rounded-md px-4 text-sm"
+          >
+            Retour à l'administration
+          </Button>
+        </div>
       </div>
     </ProtectedRoute>
   );
