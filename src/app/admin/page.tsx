@@ -8,8 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
-  const { user, logout, deleteUser } = useAuthStore();
-  const router = useRouter();
+  const { user, deleteUser } = useAuthStore();
   const [restaurateurs, setRestaurateurs] = useState<Array<{
     id: string;
     name: string;

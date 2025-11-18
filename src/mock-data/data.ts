@@ -1,6 +1,6 @@
-import { RestaurantWithDishes } from "@/types/restaurants.type";
+import { RestaurantWithPlats } from "@/types/restaurants.type";
 
-const data: RestaurantWithDishes[] = [
+const data: RestaurantWithPlats[] = [
 	{
 		id: 1,
 		name: "La Maison Italienne",
@@ -21,45 +21,18 @@ const data: RestaurantWithDishes[] = [
 		isDeliveryAvailable: true,
 		isParkingAvailable: true,
 		isReservationRequired: true,
-		dishes: [
+		plats: [
 			{
 				id: 101,
 				name: "Truffle Pasta",
-				description:
-					"Fresh handmade fettuccine with black truffle shavings and parmesan cream sauce",
 				price: 28.0,
 				image: "https://images.unsplash.com/photo-1473093226795-af9932fe5856",
-				category: "Main Course",
-				isSpicy: false,
-				isVegetarian: true,
-				ingredients: [
-					"Fettuccine",
-					"Black Truffle",
-					"Parmesan",
-					"Cream",
-					"Butter",
-				],
-				allergies: ["Dairy", "Gluten"],
-				calories: 850,
 			},
 			{
 				id: 102,
 				name: "Osso Buco",
-				description: "Braised veal shanks with gremolata and saffron risotto",
 				price: 34.0,
 				image: "https://images.unsplash.com/photo-1547424850-26228a17e42b",
-				category: "Main Course",
-				isSpicy: false,
-				isVegetarian: false,
-				ingredients: [
-					"Veal Shanks",
-					"Saffron",
-					"Risotto Rice",
-					"Lemon",
-					"Garlic",
-				],
-				allergies: ["Gluten"],
-				calories: 950,
 			},
 		],
 	},
@@ -82,32 +55,18 @@ const data: RestaurantWithDishes[] = [
 		isDeliveryAvailable: true,
 		isParkingAvailable: false,
 		isReservationRequired: false,
-		dishes: [
+		plats: [
 			{
 				id: 201,
 				name: "Dragon Roll",
-				description: "Eel and cucumber inside, avocado and tobiko on top",
 				price: 22.0,
 				image: "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56",
-				category: "Rolls",
-				isSpicy: false,
-				isVegetarian: false,
-				ingredients: ["Eel", "Cucumber", "Avocado", "Tobiko", "Rice"],
-				allergies: ["Fish", "Sesame"],
-				calories: 280,
 			},
 			{
 				id: 202,
 				name: "Wagyu Nigiri",
-				description: "Seared A5 wagyu beef on sushi rice with truffle oil",
 				price: 18.0,
 				image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c",
-				category: "Nigiri",
-				isSpicy: false,
-				isVegetarian: false,
-				ingredients: ["A5 Wagyu", "Sushi Rice", "Truffle Oil", "Wasabi"],
-				allergies: ["Fish"],
-				calories: 200,
 			},
 		],
 	},
@@ -130,49 +89,18 @@ const data: RestaurantWithDishes[] = [
 		isDeliveryAvailable: true,
 		isParkingAvailable: true,
 		isReservationRequired: false,
-		dishes: [
+		plats: [
 			{
 				id: 301,
 				name: "Butter Chicken",
-				description:
-					"Tender chicken in a rich tomato and butter sauce with aromatic spices",
 				price: 24.0,
 				image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398",
-				category: "Main Course",
-				isSpicy: true,
-				isVegetarian: false,
-				ingredients: [
-					"Chicken",
-					"Butter",
-					"Tomato",
-					"Cream",
-					"Garam Masala",
-					"Ginger",
-					"Garlic",
-				],
-				allergies: ["Dairy", "Nuts"],
-				calories: 650,
 			},
 			{
 				id: 302,
 				name: "Palak Paneer",
-				description: "Fresh spinach curry with homemade cottage cheese cubes",
 				price: 20.0,
 				image: "https://images.unsplash.com/photo-1601050690597-df0568f70950",
-				category: "Vegetarian",
-				isSpicy: true,
-				isVegetarian: true,
-				ingredients: [
-					"Spinach",
-					"Paneer",
-					"Onion",
-					"Tomato",
-					"Garlic",
-					"Ginger",
-					"Green Chili",
-				],
-				allergies: ["Dairy"],
-				calories: 450,
 			},
 		],
 	},

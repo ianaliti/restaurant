@@ -20,14 +20,14 @@ export default function page() {
   
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const addDish = (id: number) => {
+  const addPlat = (id: number) => {
     const item = items.find(i => i.id === id);
     if (item) {
       updateQuantity(id, (item.quantity || 1) + 1);
     }
   };
 
-  const deleteDish = (id: number) => {
+  const deletePlat = (id: number) => {
     const item = items.find(i => i.id === id);
     if (item) {
       updateQuantity(id, Math.max(0, (item.quantity || 1) - 1));
@@ -54,11 +54,10 @@ export default function page() {
               </div>
               <div className="min-w-0">
                 <p className="font-medium truncate">{item.name}</p>
-                <p className="text-sm text-muted-foreground truncate">{item.description}</p>
                 <div className="mt-2 inline-flex items-center gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => deleteDish(item.id)}>-</Button>
+                  <Button variant="secondary" size="sm" onClick={() => deletePlat(item.id)}>-</Button>
                   <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
-                  <Button variant="secondary" size="sm" onClick={() => addDish(item.id)}>+</Button>
+                  <Button variant="secondary" size="sm" onClick={() => addPlat(item.id)}>+</Button>
                   <Button variant="ghost" size="sm" className="text-red-600" onClick={() => removeItem(item.id)}>Remove</Button>
                 </div>
               </div>

@@ -1,15 +1,8 @@
-export interface Dish {
+export interface Plat {
   id: number;
   name: string;
-  description: string;
   price: number;
   image: string;
-  category: string;
-  isSpicy: boolean;
-  isVegetarian: boolean;
-  ingredients: string[];
-  allergies: string[];
-  calories: number;
 }
 
 export interface Restaurant {
@@ -32,8 +25,8 @@ export interface Restaurant {
   isReservationRequired: boolean;
 }
 
-export interface RestaurantWithDishes extends Restaurant {
-  dishes: Dish[];
+export interface RestaurantWithPlats extends Restaurant {
+  plats: Plat[];
   quantity?: number;
 }
 
@@ -43,7 +36,7 @@ export interface Profile {
   email: string;
 }
 
-export interface CartItem extends Dish {
+export interface CartItem extends Plat {
   quantity: number;
   restaurantId: number;
 }

@@ -27,14 +27,13 @@ const restaurant = data.find((resto) => resto.id === idNumber);
       </div>
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {
-                restaurant.dishes.map((dish) => (
-                    <Link href={`/dish/${dish.id}`} key={dish.id}>
+                restaurant.plats.map((plat) => (
+                    <Link href={`/plat/${plat.id}`} key={plat.id}>
                         <CardComponent
-                            key={dish.id}
-                            name={dish.name}
-                            id={dish.id}
-                            description={dish.description}
-                            image={dish.image}
+                            key={plat.id}
+                            name={plat.name}
+                            id={plat.id}
+                            image={plat.image}
                         />
                     </Link>
                 ))

@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { CartItem, Dish } from '@/types/restaurants.type';
+import { CartItem, Plat } from '@/types/restaurants.type';
 import { Order } from '@/types/restaurants.type';
 
 
 interface CartState {
   items: (CartItem)[];
-  addItem: (item: Dish & { restaurantId: number }) => void;
+  addItem: (item: Plat & { restaurantId: number }) => void;
   removeItem: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;

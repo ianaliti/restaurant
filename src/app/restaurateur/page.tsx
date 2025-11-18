@@ -3,21 +3,58 @@
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/app/store/authStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuthStore, getRestaurantByUserId, createRestaurant } from "@/app/store/authStore";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function RestaurantPage() {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
-    name: 'Le clos des sens',
-    address: '18 Rue Jean Mermoz',
-    codePostal: '74000',
-    city: 'Annecy',
+    name: '',
+    address: '',
+    codePostal: '',
+    city: '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user?.id) {
+      const restaurant = getRestaurantByUserId(user.id);
+      if (restaurant) {
+        setFormData({
+          name: restaurant.name || '',
+          address: restaurant.address || '',
+          codePostal: restaurant.codePostal || '',
+          city: restaurant.city || '',
+        });
+      }
+    }
+  }, [user?.id]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Restaurant mis à jour avec succès!');
+    
+    if (!user?.id) {
+      alert('Utilisateur non connecté');
+      return;
+    }
+
+    try {
+
+      const restaurant = getRestaurantByUserId(user.id);
+      createRestaurant({
+        userId: user.id,
+        name: formData.name,
+        address: formData.address,
+        codePostal: formData.codePostal,
+        city: formData.city,
+        email: user.email,
+      });
+      
+      setShowSuccess(true);
+    } catch (error) {
+      alert('Erreur lors de la mise à jour');
+    }
   };
 
   return (
@@ -27,7 +64,7 @@ export default function RestaurantPage() {
           <h1 className="text-2xl font-semibold">Mon Restaurant</h1>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm p-6">
+
           <p className="text-muted-foreground mb-4">
             Bienvenue, {user?.name}
           </p>
@@ -39,6 +76,7 @@ export default function RestaurantPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Nom du restaurant"
+                required
               />
             </div>
             
@@ -76,7 +114,14 @@ export default function RestaurantPage() {
             </Button>
           </form>
         </div>
-      </div>
+        
+        {showSuccess && (
+          <SuccessMessage
+            message="Restaurant mis à jour avec succès!"
+            onClose={() => setShowSuccess(false)}
+          />
+        )}
+    
     </ProtectedRoute>
   );
 }
