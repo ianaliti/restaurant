@@ -1,30 +1,26 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useAuthStore } from "@/app/store/authStore";
 import { useState } from "react";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default function AdminPage() {
+const restaurateurs = [
+  { id: 1, name: "Le clos des sens", email: "contact@gmail.com" },
+  { id: 2, name: "Macdo", email: "contact@gmail.com" },
+];
+
+export default function Page() {
   const { user } = useAuthStore();
-  const [restaurateurs, setRestaurateurs] = useState([
-    { id: 1, email: 'restaurateur@restodigital.com', name: 'Restaurateur User', status: 'active' },
-  ]);
+  const [restaurateursList, setRestaurateursList] = useState(restaurateurs);
 
   return (
     <ProtectedRoute requiredRole="admin">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Administration</h1>
-            <p className="text-muted-foreground">Bienvenue, {user?.name}</p>
-          </div>
-        </div>
-
-       <div className="space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold">Restaurateurs</h1>
-          <Link href="/admin/restaurant" className="h-9 inline-flex items-center rounded-md bg-primary px-3 text-white text-sm">
+          <Link href="/admin/restaurateurs/new" className="h-9 inline-flex items-center rounded-md bg-primary px-3 text-white text-sm">
             Ajouter un restaurateur
           </Link>
         </div>
@@ -59,4 +55,5 @@ export default function AdminPage() {
     </ProtectedRoute>
   );
 }
+
 

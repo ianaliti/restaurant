@@ -4,8 +4,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/app/store/authStore";
 
 const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/restaurateurs", label: "Restaurateurs" },
+  { href: "/restaurateur", label: "Dashboard" },
+  { href: "/restaurateur/plats", label: "Plats" },
+  { href: "/restaurateur/commandes", label: "Commandes" },
 ];
 
 export default function AdminSidebar() {
@@ -23,7 +24,7 @@ export default function AdminSidebar() {
       <div className="p-3">
         <nav className="flex flex-col gap-2">
           {links.map((l) => {
-            const active = pathname === l.href || (l.href !== '/admin' && pathname.startsWith(l.href));
+            const active = pathname === l.href || (l.href !== '/restaurateur' && pathname.startsWith(l.href));
             return (
               <Link
                 key={l.href}

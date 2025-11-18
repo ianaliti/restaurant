@@ -1,12 +1,10 @@
 import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import CardComponent from "@/components/card/CardComponent";
 import data from "@/mock-data/data";
 import Link from "next/link";
 
 const page = () => {
-  //   const { data: session } = useSession();
   console.log(data);
 
   return (
