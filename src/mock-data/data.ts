@@ -74,7 +74,7 @@ const data: RestaurantWithPlats[] = [
 		id: 3,
 		name: "Spice Route",
 		description:
-			"A journey through Indian flavors featuring traditional dishes with a modern twist.",
+			"A journey through Indian flavors featuring traditional plats with a modern twist.",
 		address: "789 Curry Lane, San Francisco, CA 94110",
 		phone: "+1 415-555-0789",
 		website: "https://spiceroute.com",

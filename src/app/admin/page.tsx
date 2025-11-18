@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { useAuthStore, getAllRestaurateurs } from "@/app/store/authStore";
+import { useAuthStore } from "@/app/store/authStore";
+import { getAllRestaurateurs } from "@/app/store/userStore";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

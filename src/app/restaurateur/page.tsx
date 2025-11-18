@@ -4,7 +4,8 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { useAuthStore, getRestaurantByUserId, createRestaurant } from "@/app/store/authStore";
+import { useAuthStore } from "@/app/store/authStore";
+import { getRestaurantByUserId, createRestaurant } from "@/app/store/restaurantStore";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function RestaurantPage() {

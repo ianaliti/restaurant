@@ -21,7 +21,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   const addItem = useCartStore((state) => state.addItem);
 
   const plat: (Plat & { restaurantId: number }) | undefined = allPlats.find(
-    (d) => d.id === idNumber
+    (p) => p.id === idNumber
   );
 
   if (!plat) return notFound();

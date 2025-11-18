@@ -1,20 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-
-export type UserRole = 'customer' | 'restaurateur' | 'admin';
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  createdAt: string;
-}
-
-
-interface UserWithPassword extends User {
-  password: string; 
-}
+import type { UserRole, User, UserWithPassword } from '@/types/user.type';
+import { getMockUsers, saveMockUsers } from './userStore';
+import { deleteRestaurantByUserId } from './restaurantStore';
+import { deletePlatsByUserId } from './platStore';
 
 interface AuthState {
   user: User | null;
@@ -35,97 +24,6 @@ interface AuthState {
   isRestaurateur: () => boolean;
   isCustomer: () => boolean;
 }
-
-
-const MOCK_USERS_KEY = 'mock-users-storage';
-
-const getMockUsers = (): UserWithPassword[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(MOCK_USERS_KEY);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  
-  const defaultUsers: UserWithPassword[] = [
-    {
-      id: '1',
-      email: 'admin@restodigital.com',
-      name: 'Admin User',
-      password: 'admin123', 
-      role: 'admin',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      email: 'restaurateur@restodigital.com',
-      name: 'Restaurateur User',
-      password: 'resto123',
-      role: 'restaurateur',
-      createdAt: new Date().toISOString(),
-    },
-  ];
-  localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(defaultUsers));
-  return defaultUsers;
-};
-
-const saveMockUsers = (users: UserWithPassword[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(users));
-};
-
-export interface RestaurantData {
-  userId: string;
-  name: string;
-  address: string;
-  codePostal: string;
-  city: string;
-  email: string;
-}
-
-const MOCK_RESTAURANTS_KEY = 'mock-restaurants-storage';
-
-const getMockRestaurants = (): RestaurantData[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(MOCK_RESTAURANTS_KEY);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  return [];
-};
-
-const saveMockRestaurants = (restaurants: RestaurantData[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(MOCK_RESTAURANTS_KEY, JSON.stringify(restaurants));
-};
-
-export const createRestaurant = (restaurantData: RestaurantData) => {
-  const restaurants = getMockRestaurants();
-  const existingIndex = restaurants.findIndex(r => r.userId === restaurantData.userId);
-  if (existingIndex >= 0) {
-    restaurants[existingIndex] = restaurantData;
-  } else {
-    restaurants.push(restaurantData);
-  }
-  saveMockRestaurants(restaurants);
-};
-
-export const getRestaurantByUserId = (userId: string): RestaurantData | null => {
-  const restaurants = getMockRestaurants();
-  return restaurants.find(r => r.userId === userId) || null;
-};
-
-export const deleteRestaurantByUserId = (userId: string) => {
-  const restaurants = getMockRestaurants();
-  const filtered = restaurants.filter(r => r.userId !== userId);
-  saveMockRestaurants(filtered);
-};
-
-export const getAllRestaurateurs = (): User[] => {
-  const users = getMockUsers();
-  return users
-    .filter((u) => u.role === 'restaurateur')
-    .map(({ password, ...user }) => user);
-};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -285,6 +183,7 @@ export const useAuthStore = create<AuthState>()(
           const filteredUsers = users.filter((u) => u.id !== userId);
           saveMockUsers(filteredUsers);
           deleteRestaurantByUserId(userId);
+          deletePlatsByUserId(userId);
         } catch (error) {
           throw new Error('Failed to delete user');
         }
@@ -298,10 +197,10 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
-        // Mark as hydrated when rehydration is complete
         state?.setHasHydrated(true);
       },
     }
   )
 );
 
+export type { User, UserRole } from '@/types/user.type';

@@ -3,13 +3,13 @@
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuthStore, createRestaurant } from "@/app/store/authStore";
+import { createRestaurant } from "@/app/store/restaurantStore";
+import { createUserWithoutLogin } from "@/app/store/userStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function Page() {
-  const { register } = useAuthStore();
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -30,28 +30,21 @@ export default function Page() {
     }
 
     try {
-      const currentUser = useAuthStore.getState().user;
-      await register(formData.email, formData.password, formData.name, 'restaurateur');
+      const newUser = createUserWithoutLogin(
+        formData.email,
+        formData.password,
+        formData.name,
+        'restaurateur'
+      );
       
-      const newUser = useAuthStore.getState().user;
-      if (newUser) {
-        createRestaurant({
-          userId: newUser.id,
-          name: formData.name,
-          address: formData.address,
-          codePostal: formData.codePostal,
-          city: formData.city,
-          email: formData.email,
-        });
-        
-        if (currentUser) {
-          useAuthStore.getState().logout();
-          useAuthStore.setState({
-            user: currentUser,
-            isAuthenticated: true,
-          });
-        }
-      }
+      createRestaurant({
+        userId: newUser.id,
+        name: formData.name,
+        address: formData.address,
+        codePostal: formData.codePostal,
+        city: formData.city,
+        email: formData.email,
+      });
       
       setFormData({
         name: '',
