@@ -3,7 +3,7 @@
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createRestaurant } from "@/app/store/restaurantStore";
+import { useRestaurantStore } from "@/app/store/restaurantStore";
 import { createUserWithoutLogin } from "@/app/store/userStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function Page() {
   const router = useRouter();
+  const createRestaurant = useRestaurantStore(state => state.createRestaurant);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -18,6 +19,7 @@ export default function Page() {
     city: '',
     email: '',
     password: '',
+    image: ''
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -37,14 +39,17 @@ export default function Page() {
         'restaurateur'
       );
       
-      createRestaurant({
+      const restaurantData = {
         userId: newUser.id,
         name: formData.name,
         address: formData.address,
         codePostal: formData.codePostal,
         city: formData.city,
         email: formData.email,
-      });
+        image: formData.image || '/default-restaurant.jpg',
+      };
+      
+      createRestaurant(restaurantData);
       
       setFormData({
         name: '',
@@ -53,10 +58,11 @@ export default function Page() {
         city: '',
         email: '',
         password: '',
+        image: ''
       });
       setShowSuccess(true);
     } catch (error) {
-      alert('Erreur lors de la création du restaurateur');
+      console.error('Error creating restaurateur:', error);;
     }
   };
 
@@ -93,6 +99,12 @@ export default function Page() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
+          />
+          <Input
+            type="text"
+            placeholder="URL de l'image"
+            value={formData.image}
+            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
           />
           <Input
             type="password"

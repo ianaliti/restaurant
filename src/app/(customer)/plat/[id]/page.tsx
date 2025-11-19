@@ -1,22 +1,41 @@
 "use client";
-import { use } from "react";
+import { use, useMemo } from "react";
 import { notFound } from "next/navigation";
-import data from "@/mock-data/data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/app/store/cartStore";
+import { usePlatStore } from "@/app/store/platStore";
+import { useRestaurantStore } from "@/app/store/restaurantStore";
 import Link from "next/link";
 import { Plat } from "@/types/restaurants.type";
 
 export default function page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const idNumber = Number(id);
-  const allPlats: (Plat & { restaurantId: number })[] = data.flatMap((resto) =>
-    resto.plats.map((plat) => ({
-      ...plat,
-      restaurantId: resto.id,
-    }))
-  );
+  
+  const allPlatsFromStore = usePlatStore(state => state.getAllPlats());
+  const restaurants = useRestaurantStore(state => state.getAllRestaurants());
+
+  const allPlats: (Plat & { restaurantId: number })[] = useMemo(() => {
+    const platsWithRestaurantId: (Plat & { restaurantId: number })[] = [];
+    
+    allPlatsFromStore.forEach((platData) => {
+      const restaurant = restaurants.find(r => r.userId === platData.userId);
+      if (restaurant) {
+        const platNumericId = Number(platData.id) || parseInt(platData.id, 10) || 0;
+        
+        platsWithRestaurantId.push({
+          id: platNumericId,
+          name: platData.name,
+          price: platData.price,
+          image: platData.image,
+          restaurantId: restaurant.id,
+        });
+      }
+    });
+    
+    return platsWithRestaurantId;
+  }, [allPlatsFromStore, restaurants]);
 
   const addItem = useCartStore((state) => state.addItem);
 

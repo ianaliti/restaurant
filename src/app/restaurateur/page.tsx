@@ -5,16 +5,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/store/authStore";
-import { getRestaurantByUserId, createRestaurant } from "@/app/store/restaurantStore";
+import { useRestaurantStore } from "@/app/store/restaurantStore";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function RestaurantPage() {
   const { user } = useAuthStore();
+  const getRestaurantByUserId = useRestaurantStore(state => state.getRestaurantByUserId);
+  const createRestaurant = useRestaurantStore(state => state.createRestaurant);
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     codePostal: '',
     city: '',
+    image: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -27,10 +30,11 @@ export default function RestaurantPage() {
           address: restaurant.address || '',
           codePostal: restaurant.codePostal || '',
           city: restaurant.city || '',
+          image: restaurant.image || '',
         });
       }
     }
-  }, [user?.id]);
+  }, [user?.id, getRestaurantByUserId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,20 +45,21 @@ export default function RestaurantPage() {
     }
 
     try {
-
-      const restaurant = getRestaurantByUserId(user.id);
-      createRestaurant({
+      const restaurantData = {
         userId: user.id,
         name: formData.name,
         address: formData.address,
         codePostal: formData.codePostal,
         city: formData.city,
         email: user.email,
-      });
+        image: formData.image || '/default-restaurant.jpg',
+      };
+      
+      createRestaurant(restaurantData);
       
       setShowSuccess(true);
     } catch (error) {
-      alert('Erreur lors de la mise à jour');
+      console.error('Error updating restaurant:', error);
     }
   };
 
@@ -108,6 +113,15 @@ export default function RestaurantPage() {
                   placeholder="Ville"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-1 block">URL de l'image</label>
+              <Input
+                value={formData.image}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+              />
             </div>
             
             <Button type="submit" className="w-full">

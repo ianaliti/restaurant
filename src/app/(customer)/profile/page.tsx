@@ -46,7 +46,7 @@ export default function ProfilePage() {
   return (
     <div className='max-w-lg mx-auto px-4 sm:px-6 py-8 flex justify-between flex-col'>
       <div className='text-3xl flex justify-center mb-8 font-bold'>Bienvenue, {user.name}</div>
-      <h1 className='text-xl mb-6'>Mon Profil</h1>
+        <h1 className='text-xl mb-6'>Mon Profil</h1>
       
       {error && (
         <div className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'>

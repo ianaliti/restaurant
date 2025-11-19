@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/app/store/authStore";
-import { getPlatsByUserId, deletePlat } from "@/app/store/platStore";
+import { usePlatStore } from "@/app/store/platStore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CardComponent from '@/components/card/CardComponent';
@@ -12,27 +12,9 @@ import CardComponent from '@/components/card/CardComponent';
 export default function PlatsPage() {
   const { user } = useAuthStore();
   const router = useRouter();
-  const [plats, setPlats] = useState<
-    Array<{
-      id: string;
-      name: string;
-      price: number;
-      image: string;
-    }>
-  >([]);
+  const getPlatsByUserId = usePlatStore(state => state.getPlatsByUserId);
+  const plats = user?.id ? getPlatsByUserId(user.id) : [];
 
-  useEffect(() => {
-    if (user?.id) {
-      loadPlats();
-    }
-  }, [user?.id]);
-
-  const loadPlats = () => {
-    if (user?.id) {
-      const userPlats = getPlatsByUserId(user.id);
-      setPlats(userPlats);
-    }
-  };
 
   return (
     <ProtectedRoute requiredRole={["restaurateur", "admin"]}>

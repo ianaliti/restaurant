@@ -5,13 +5,14 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/app/store/authStore";
-import { createPlat } from "@/app/store/platStore";
+import { usePlatStore } from "@/app/store/platStore";
 import { useRouter } from "next/navigation";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 export default function NewPlatPage() {
   const { user } = useAuthStore();
   const router = useRouter();
+  const createPlat = usePlatStore(state => state.createPlat);
   const [formData, setFormData] = useState({
     name: '',
     price: '',

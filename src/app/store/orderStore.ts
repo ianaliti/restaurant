@@ -24,3 +24,17 @@ export const useOrderStore = create<OrderState>() (
     }
   )
 );
+
+export const getAllOrders = (): Order[] => {
+  if (typeof window === 'undefined') return [];
+  const stored = localStorage.getItem('order-history-storage');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      return parsed.state?.orders || [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};

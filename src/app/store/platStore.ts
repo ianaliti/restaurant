@@ -1,3 +1,6 @@
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
 export interface PlatData {
   id: string;
   userId: string;
@@ -6,58 +9,69 @@ export interface PlatData {
   image: string;
 }
 
-const MOCK_PLATS_KEY = 'mock-plats-storage';
+interface PlatState {
+  plats: PlatData[];
+  createPlat: (platData: Omit<PlatData, 'id'>) => PlatData;
+  getPlatsByUserId: (userId: string) => PlatData[];
+  updatePlat: (platId: string, updates: Partial<Omit<PlatData, 'id' | 'userId'>>) => PlatData | null;
+  deletePlat: (platId: string) => void;
+  deletePlatsByUserId: (userId: string) => void;
+  getAllPlats: () => PlatData[];
+}
 
-const getMockPlats = (): PlatData[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(MOCK_PLATS_KEY);
-  if (stored) {
-    return JSON.parse(stored);
-  }
-  return [];
-};
+export const usePlatStore = create<PlatState>()(
+  persist(
+    (set, get) => ({
+      plats: [],
 
-const saveMockPlats = (plats: PlatData[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(MOCK_PLATS_KEY, JSON.stringify(plats));
-};
+      createPlat: (platData: Omit<PlatData, 'id'>) => {
+        const newPlat: PlatData = {
+          ...platData,
+          id: Date.now().toString(),
+        };
+        set((state) => ({
+          plats: [...state.plats, newPlat],
+        }));
+        return newPlat;
+      },
 
-export const createPlat = (platData: Omit<PlatData, 'id'>) => {
-  const plats = getMockPlats();
-  const newPlat: PlatData = {
-    ...platData,
-    id: Date.now().toString(),
-  };
-  plats.push(newPlat);
-  saveMockPlats(plats);
-  return newPlat;
-};
+      getPlatsByUserId: (userId: string) => {
+        const plats = get().plats;
+        return plats.filter((p) => p.userId === userId);
+      },
 
-export const getPlatsByUserId = (userId: string): PlatData[] => {
-  const plats = getMockPlats();
-  return plats.filter(p => p.userId === userId);
-};
+      updatePlat: (platId: string, updates: Partial<Omit<PlatData, 'id' | 'userId'>>) => {
+        const plats = get().plats;
+        const index = plats.findIndex((p) => p.id === platId);
+        if (index >= 0) {
+          const updated = [...plats];
+          updated[index] = { ...updated[index], ...updates };
+          set({ plats: updated });
+          return updated[index];
+        }
+        return null;
+      },
 
-export const updatePlat = (platId: string, updates: Partial<Omit<PlatData, 'id' | 'userId'>>) => {
-  const plats = getMockPlats();
-  const index = plats.findIndex(p => p.id === platId);
-  if (index >= 0) {
-    plats[index] = { ...plats[index], ...updates };
-    saveMockPlats(plats);
-    return plats[index];
-  }
-  return null;
-};
+      deletePlat: (platId: string) => {
+        set((state) => ({
+          plats: state.plats.filter((p) => p.id !== platId),
+        }));
+      },
 
-export const deletePlat = (platId: string) => {
-  const plats = getMockPlats();
-  const filtered = plats.filter(p => p.id !== platId);
-  saveMockPlats(filtered);
-};
+      deletePlatsByUserId: (userId: string) => {
+        set((state) => ({
+          plats: state.plats.filter((p) => p.userId !== userId),
+        }));
+      },
 
-export const deletePlatsByUserId = (userId: string) => {
-  const plats = getMockPlats();
-  const filtered = plats.filter(p => p.userId !== userId);
-  saveMockPlats(filtered);
-};
+      getAllPlats: () => {
+        return get().plats;
+      },
+    }),
+    {
+      name: 'plats-storage',
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
 

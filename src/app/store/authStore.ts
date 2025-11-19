@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { UserRole, User, UserWithPassword } from '@/types/user.type';
 import { getMockUsers, saveMockUsers } from './userStore';
-import { deleteRestaurantByUserId } from './restaurantStore';
-import { deletePlatsByUserId } from './platStore';
+import { useRestaurantStore } from './restaurantStore';
+import { usePlatStore } from './platStore';
 
 interface AuthState {
   user: User | null;
@@ -182,8 +182,8 @@ export const useAuthStore = create<AuthState>()(
           const users = getMockUsers();
           const filteredUsers = users.filter((u) => u.id !== userId);
           saveMockUsers(filteredUsers);
-          deleteRestaurantByUserId(userId);
-          deletePlatsByUserId(userId);
+          useRestaurantStore.getState().deleteRestaurantByUserId(userId);
+          usePlatStore.getState().deletePlatsByUserId(userId);
         } catch (error) {
           throw new Error('Failed to delete user');
         }

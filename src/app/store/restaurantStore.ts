@@ -1,47 +1,95 @@
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
 export interface RestaurantData {
+  id: number;
   userId: string;
   name: string;
   address: string;
   codePostal: string;
   city: string;
   email: string;
+  image: string;
 }
 
-const MOCK_RESTAURANTS_KEY = 'mock-restaurants-storage';
+interface RestaurantState {
+  restaurants: RestaurantData[];
+  createRestaurant: (restaurantData: Omit<RestaurantData, 'id'> | RestaurantData) => void;
+  getRestaurantByUserId: (userId: string) => RestaurantData | null;
+  deleteRestaurantByUserId: (userId: string) => void;
+  getAllRestaurants: () => RestaurantData[];
+}
 
-const getMockRestaurants = (): RestaurantData[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(MOCK_RESTAURANTS_KEY);
-  if (stored) {
-    return JSON.parse(stored);
+const migrateRestaurant = (restaurant: any): RestaurantData => {
+  if (restaurant.id) {
+    return restaurant as RestaurantData;
   }
-  return [];
+  return {
+    ...restaurant,
+    id: restaurant.userId.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0),
+  };
 };
 
-const saveMockRestaurants = (restaurants: RestaurantData[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(MOCK_RESTAURANTS_KEY, JSON.stringify(restaurants));
-};
+export const useRestaurantStore = create<RestaurantState>()(
+  persist(
+    (set, get) => ({
+      restaurants: [],
 
-export const createRestaurant = (restaurantData: RestaurantData) => {
-  const restaurants = getMockRestaurants();
-  const existingIndex = restaurants.findIndex(r => r.userId === restaurantData.userId);
-  if (existingIndex >= 0) {
-    restaurants[existingIndex] = restaurantData;
-  } else {
-    restaurants.push(restaurantData);
-  }
-  saveMockRestaurants(restaurants);
-};
+      createRestaurant: (restaurantData: Omit<RestaurantData, 'id'> | RestaurantData) => {
+        set((state) => {
+          const existingIndex = state.restaurants.findIndex(
+            (r) => r.userId === restaurantData.userId
+          );
+          
+          const restaurantWithId: RestaurantData = 'id' in restaurantData && restaurantData.id
+            ? restaurantData as RestaurantData
+            : {
+                ...restaurantData,
+                id: Date.now(), 
+              };
+          
+          if (existingIndex >= 0) {
+            const updated = [...state.restaurants];
+            updated[existingIndex] = {
+              ...restaurantWithId,
+              id: updated[existingIndex].id || restaurantWithId.id,
+            };
+            return { restaurants: updated };
+          }
+          const newRestaurants = [...state.restaurants, restaurantWithId];
+          return {
+            restaurants: newRestaurants,
+          };
+        });
+      },
 
-export const getRestaurantByUserId = (userId: string): RestaurantData | null => {
-  const restaurants = getMockRestaurants();
-  return restaurants.find(r => r.userId === userId) || null;
-};
+      getRestaurantByUserId: (userId: string) => {
+        const restaurants = get().restaurants;
+        return restaurants.find((r) => r.userId === userId) || null;
+      },
 
-export const deleteRestaurantByUserId = (userId: string) => {
-  const restaurants = getMockRestaurants();
-  const filtered = restaurants.filter(r => r.userId !== userId);
-  saveMockRestaurants(filtered);
-};
+      deleteRestaurantByUserId: (userId: string) => {
+        set((state) => ({
+          restaurants: state.restaurants.filter((r) => r.userId !== userId),
+        }));
+      },
 
+      getAllRestaurants: () => {
+        return get().restaurants;
+      },
+    }),
+    {
+      name: 'restaurants-storage',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state?.restaurants) {
+          const needsMigration = state.restaurants.some(r => !r.id);
+          if (needsMigration) {
+            const migrated = state.restaurants.map(migrateRestaurant);
+            state.restaurants = migrated;
+          }
+        }
+      },
+    }
+  )
+);
