@@ -43,6 +43,7 @@ export interface CartItem extends Plat {
 
 export interface Order {
   id: number;
+  userId: string;
   date: string;
   total: number;
   items: CartItem[];

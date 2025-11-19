@@ -4,6 +4,7 @@ import type { UserRole, User, UserWithPassword } from '@/types/user.type';
 import { getMockUsers, saveMockUsers } from './userStore';
 import { useRestaurantStore } from './restaurantStore';
 import { usePlatStore } from './platStore';
+import { useCartStore } from './cartStore';
 
 interface AuthState {
   user: User | null;
@@ -61,6 +62,8 @@ export const useAuthStore = create<AuthState>()(
           saveMockUsers(users);
 
           const { password: _, ...userWithoutPassword } = newUser;
+
+          useCartStore.getState().setCurrentUser(userWithoutPassword.id);
           set({
             user: userWithoutPassword,
             isAuthenticated: true,
@@ -89,6 +92,7 @@ export const useAuthStore = create<AuthState>()(
 
           const { password: _, ...userWithoutPassword } = user;
 
+          useCartStore.getState().setCurrentUser(userWithoutPassword.id);
           set({
             user: userWithoutPassword,
             isAuthenticated: true,
@@ -105,6 +109,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        useCartStore.getState().setCurrentUser(null);
         set({
           user: null,
           isAuthenticated: false,
@@ -197,6 +202,9 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
+        if (state?.user?.id) {
+          useCartStore.getState().setCurrentUser(state.user.id);
+        }
         state?.setHasHydrated(true);
       },
     }

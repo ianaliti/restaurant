@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/app/store/cartStore";
 import { usePlatStore } from "@/app/store/platStore";
 import { useRestaurantStore } from "@/app/store/restaurantStore";
+import { useAuthStore } from "@/app/store/authStore";
 import Link from "next/link";
 import { Plat } from "@/types/restaurants.type";
 
@@ -38,12 +39,18 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   }, [allPlatsFromStore, restaurants]);
 
   const addItem = useCartStore((state) => state.addItem);
+  const { user } = useAuthStore();
 
   const plat: (Plat & { restaurantId: number }) | undefined = allPlats.find(
     (p) => p.id === idNumber
   );
 
   if (!plat) return notFound();
+
+  const handleAddToCart = () => {
+    const userId = user?.id || 'guest';
+    addItem(plat, userId);
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
@@ -64,7 +71,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
           )}`}</p>
           <Button
             className="mt-2 h-12 rounded-3xl"
-            onClick={() => addItem(plat)}
+            onClick={handleAddToCart}
           >
             <Link href="/cart">Ajouter au panier</Link>
           </Button>

@@ -4,19 +4,31 @@ import { Order } from '@/types/restaurants.type';
 
 
 interface OrderState {
-    orders: Order[];
-    addOrder: (order : Order) => void;
+    userOrders: { [userId: string]: Order[] };
+    addOrder: (order: Order) => void;
+    getOrdersByUserId: (userId: string) => Order[];
 }
 
 export const useOrderStore = create<OrderState>() (
    persist(
-    (set) => ({
-      orders: [],
+    (set, get) => ({
+      userOrders: {},
 
       addOrder: (order) =>
-        set((state) => ({
-          orders: [...state.orders, order],
-        })),
+        set((state) => {
+          const userOrders = state.userOrders[order.userId] || [];
+          return {
+            userOrders: {
+              ...state.userOrders,
+              [order.userId]: [...userOrders, order],
+            },
+          };
+        }),
+
+      getOrdersByUserId: (userId: string) => {
+        const userOrders = get().userOrders[userId] || [];
+        return userOrders;
+      },
     }),
     {
       name: "order-history-storage",
@@ -31,7 +43,8 @@ export const getAllOrders = (): Order[] => {
   if (stored) {
     try {
       const parsed = JSON.parse(stored);
-      return parsed.state?.orders || [];
+      const userOrders = parsed.state?.userOrders || {};
+      return Object.values(userOrders).flat() as Order[];
     } catch {
       return [];
     }

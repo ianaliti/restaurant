@@ -24,11 +24,9 @@ const Navbar = () => {
           Restaurants
         </Link>
         <div className="flex items-center gap-6 text-sm">
-          {user && (
-            <Link className="hover:text-primary transition-colors" href="/cart">
-              Panier
-            </Link>
-          )}
+          <Link className="hover:text-primary transition-colors" href="/cart">
+            Panier
+          </Link>
           {user?.role === 'customer' && (
             <Link
               className="hover:text-primary transition-colors"
