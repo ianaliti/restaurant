@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/app/store/authStore';
-import { SuccessMessage } from '@/components/ui/SuccessMessage';
+import { Message } from '@/components/ui/Message';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 export default function ProfilePage() {
   const { user, updateProfile, isLoading, error } = useAuthStore();
@@ -35,17 +36,10 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) {
-    return (
-      <div className='max-w-lg mx-auto px-4 sm:px-6 py-8'>
-        <p>Veuillez vous connecter pour voir votre profil</p>
-      </div>
-    );
-  }
-
   return (
-    <div className='max-w-lg mx-auto px-4 sm:px-6 py-8 flex justify-between flex-col'>
-      <div className='text-3xl flex justify-center mb-8 font-bold'>Bienvenue, {user.name}</div>
+    <ProtectedRoute requiredRole="customer">
+      <div className='max-w-lg mx-auto px-4 sm:px-6 py-8 flex justify-between flex-col'>
+      <div className='text-3xl flex justify-center mb-8 font-bold'>Bienvenue, {user?.name || ''}</div>
         <h1 className='text-xl mb-6'>Mon Profil</h1>
       
       {error && (
@@ -80,11 +74,13 @@ export default function ProfilePage() {
       </form>
 
       {showSuccess && (
-        <SuccessMessage
+        <Message
+          type="success"
           message="Profil mis à jour avec succès!"
           onClose={() => setShowSuccess(false)}
         />
       )}
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

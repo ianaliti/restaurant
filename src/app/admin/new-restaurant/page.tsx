@@ -7,7 +7,7 @@ import { useRestaurantStore } from "@/app/store/restaurantStore";
 import { createUserWithoutLogin } from "@/app/store/userStore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { Message } from "@/components/ui/Message";
 
 export default function Page() {
   const router = useRouter();
@@ -118,7 +118,8 @@ export default function Page() {
             Ajouter
           </Button>
           {showSuccess && (
-            <SuccessMessage
+            <Message
+              type="success"
               message="Restaurateur ajouté avec succès!"
               onClose={() => {
                 setShowSuccess(false);

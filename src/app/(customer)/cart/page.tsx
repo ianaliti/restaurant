@@ -2,11 +2,12 @@
 
 import { useCartStore } from "@/app/store/cartStore";
 import { useOrderStore } from "@/app/store/orderStore";
+import { useAuthStore } from "@/app/store/authStore";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { useState, useMemo, useEffect } from "react";
+import { Message } from "@/components/ui/Message";
 
 export default function page() {
   const items = useCartStore(state => state.items || []);
@@ -16,9 +17,21 @@ export default function page() {
 
   const createOrder = useCartStore(state => state.createOrder);
   const addOrder = useOrderStore((state) => state.addOrder);
-  const totalPrice = useCartStore(state => state.getTotalPrice());
+  const { user } = useAuthStore();
+  const isCustomer = user?.role === 'customer';
   
   const [showSuccess, setShowSuccess] = useState(false);
+  const [warningMessage, setWarningMessage] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const totalPrice = useMemo(() => {
+    if (!mounted) return 0;
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  }, [items, mounted]);
 
   const addPlat = (id: number) => {
     const item = items.find(i => i.id === id);
@@ -35,6 +48,10 @@ export default function page() {
   };
 
   const handleCreateOrder = () => {
+    if (!isCustomer) {
+      setWarningMessage(true);
+      return;
+    }
     const newOrder = createOrder();
     addOrder(newOrder);  
     setShowSuccess(true);
@@ -72,13 +89,20 @@ export default function page() {
         <div className="flex items-center gap-3">
           <Button variant="secondary" className="h-12 rounded-3xl px-6" onClick={clearCart}>Vider</Button>
           <Button className="h-12 rounded-3xl px-8" onClick={handleCreateOrder}>Payer</Button>
-
-          {
-            showSuccess && (
-             <SuccessMessage
-                message="Order Created!"
-                onClose={() => setShowSuccess(false) }/>
-              )}
+          {showSuccess && (
+            <Message
+              type="success"
+              message="Order Created!"
+              onClose={() => setShowSuccess(false)}
+            />
+          )}
+          {warningMessage && (
+            <Message
+              type="warning"
+              message="Vous devez être connecté en tant que client pour créer une commande. Veuillez vous déconnecter et vous connecter avec un compte client."
+              onClose={() => setWarningMessage(false)}
+            />
+          )}
         </div>
       </div>
     </div>

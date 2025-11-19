@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/app/store/authStore";
 import { usePlatStore } from "@/app/store/platStore";
 import { useRouter } from "next/navigation";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { Message } from "@/components/ui/Message";
 
 export default function NewPlatPage() {
   const { user } = useAuthStore();
@@ -113,7 +113,8 @@ export default function NewPlatPage() {
         </div>
 
         {showSuccess && (
-          <SuccessMessage
+          <Message
+            type="success"
             message="Plat ajouté avec succès!"
             onClose={() => {
               setShowSuccess(false);

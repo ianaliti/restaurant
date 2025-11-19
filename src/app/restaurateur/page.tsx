@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/store/authStore";
 import { useRestaurantStore } from "@/app/store/restaurantStore";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { Message } from "@/components/ui/Message";
 
 export default function RestaurantPage() {
   const { user } = useAuthStore();
@@ -131,7 +131,8 @@ export default function RestaurantPage() {
         </div>
         
         {showSuccess && (
-          <SuccessMessage
+          <Message
+            type="success"
             message="Restaurant mis à jour avec succès!"
             onClose={() => setShowSuccess(false)}
           />
