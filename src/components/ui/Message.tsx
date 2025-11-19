@@ -24,13 +24,20 @@ export function Message({ type, message, onClose }: MessageProps) {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-sm flex items-center justify-center z-50">
+    <div 
+      className="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-sm flex items-center justify-center z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="message-title"
+      aria-describedby="message-description"
+    >
       <div className="bg-white rounded p-6 max-w-md w-11/12 shadow-2xl">
-        <h3 className="text-xl font-bold mb-3">{getTitle()}</h3>
-        <p className="mb-5">{message}</p>
+        <h3 id="message-title" className="text-xl font-bold mb-3">{getTitle()}</h3>
+        <p id="message-description" className="mb-5">{message}</p>
         <button
           onClick={onClose}
-          className={`w-full ${getButtonColor()} text-white py-2 px-4 rounded`}
+          className={`w-full ${getButtonColor()} text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white`}
+          aria-label="Fermer le message"
         >
           OK
         </button>

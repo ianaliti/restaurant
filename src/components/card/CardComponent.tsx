@@ -20,13 +20,12 @@ const CardComponent = ({ name, image, address }: CardProps) => {
       <CardHeader className="p-0 h-full">
         <Image
           src={image}
-          alt={`${name} Image`}
+          alt={address ? `Image du restaurant ${name} situé à ${address}` : `Image du restaurant ${name}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="min-width: 362px) 100vw, 33vw"
         />
       </CardHeader>
-      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
       <CardContent className="absolute bottom-0 left-0 p-4 text-white z-10">
         <p className="text-lg font-semibold truncate">{name}</p>

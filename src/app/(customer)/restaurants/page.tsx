@@ -10,10 +10,6 @@ const page = () => {
   const restaurants = useRestaurantStore(state => state.restaurants);
 
   const displayRestaurants = useMemo(() => {
-    if (!restaurants || restaurants.length === 0) {
-      alert('No restaurants found. Check if restaurants were created in admin panel.');
-    }
-    
     return restaurants.map((resto) => ({
       id: resto.id,
       userId: resto.userId,
@@ -24,10 +20,20 @@ const page = () => {
   }, [restaurants]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6">
+    <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6">
       <h1 className="text-2xl sm:text-3xl font-extrabold">Restaurants</h1>
-      <Input className="rounded-3xl h-12" placeholder="Rechercher un restaurant" />
-      <div className="w-full">
+      <div>
+        <label htmlFor="restaurant-search" className="sr-only">
+          Rechercher un restaurant
+        </label>
+        <Input 
+          id="restaurant-search"
+          className="rounded-3xl h-12" 
+          placeholder="Rechercher un restaurant"
+          aria-label="Rechercher un restaurant"
+        />
+      </div>
+      <div className="w-full" role="region" aria-label="Liste des restaurants">
         {displayRestaurants.length === 0 ? (
           <div className='text-center py-12'>
             <p className='text-muted-foreground'>Aucun restaurant disponible pour le moment.</p>
@@ -47,7 +53,7 @@ const page = () => {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 };
 

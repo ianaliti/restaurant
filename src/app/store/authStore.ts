@@ -11,9 +11,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  hasHydrated: boolean;
   
-  setHasHydrated: (state: boolean) => void;
   register: (email: string, password: string, name: string, role?: UserRole) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -33,11 +31,6 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      hasHydrated: false,
-
-      setHasHydrated: (state: boolean) => {
-        set({ hasHydrated: state });
-      },
 
       register: async (email: string, password: string, name: string, role: UserRole = 'customer') => {
         set({ isLoading: true, error: null });
@@ -205,7 +198,6 @@ export const useAuthStore = create<AuthState>()(
         if (state?.user?.id) {
           useCartStore.getState().setCurrentUser(state.user.id);
         }
-        state?.setHasHydrated(true);
       },
     }
   )

@@ -10,6 +10,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Message } from "@/components/ui/Message";
 import type { CartItem } from "@/types/restaurants.type";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function page() {
   const { user } = useAuthStore();
@@ -50,7 +51,7 @@ export default function page() {
           userCarts: {
             ...state.userCarts,
             [user.id]: mergedCart,
-            guest: [], // Clear guest cart
+            guest: [], 
           },
         }));
       }
@@ -113,7 +114,8 @@ export default function page() {
   console.log("Cart Items:", items);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <main id="main-content" className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <Button variant="secondary" onClick={() => router.back()} aria-label="Retour à la page précédente"><ArrowLeft /></Button>
       <h1 className="text-2xl font-bold mb-6">Panier</h1>
       {items.length === 0 ? (
         <div className="text-center py-12">
@@ -125,15 +127,44 @@ export default function page() {
           <Card key={`${item.id}-${idx}`} className="p-4">
             <CardContent className="p-0 grid grid-cols-[96px_1fr_auto] items-center gap-4">
               <div className="relative w-24 h-24 overflow-hidden rounded-lg">
-                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                <Image 
+                  src={item.image} 
+                  alt={`Image de ${item.name}`} 
+                  fill 
+                  className="object-cover" 
+                />
               </div>
               <div className="min-w-0">
                 <p className="font-medium truncate">{item.name}</p>
-                <div className="mt-2 inline-flex items-center gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => deletePlat(item.id)}>-</Button>
-                  <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
-                  <Button variant="secondary" size="sm" onClick={() => addPlat(item.id)}>+</Button>
-                  <Button variant="ghost" size="sm" className="text-red-600" onClick={() => removeItem(item.id, userId)}>Remove</Button>
+                <div className="mt-2 inline-flex items-center gap-2" role="group" aria-label={`Actions pour ${item.name}`}>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    onClick={() => deletePlat(item.id)}
+                    aria-label={`Diminuer la quantité de ${item.name}`}
+                  >
+                    -
+                  </Button>
+                  <span className="text-sm font-medium w-6 text-center" aria-label={`Quantité: ${item.quantity}`}>
+                    {item.quantity}
+                  </span>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    onClick={() => addPlat(item.id)}
+                    aria-label={`Augmenter la quantité de ${item.name}`}
+                  >
+                    +
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600" 
+                    onClick={() => removeItem(item.id, userId)}
+                    aria-label={`Retirer ${item.name} du panier`}
+                  >
+                    Retirer
+                  </Button>
                 </div>
               </div>
               <div className="text-right font-semibold">{`$${(item.price * item.quantity).toFixed(2)}`}</div>
@@ -147,10 +178,24 @@ export default function page() {
       <div className="mt-8 flex items-center justify-between">
         <p className="text-lg font-semibold">Total: {`$${totalPrice.toFixed(2)}`}</p>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" className="h-12 rounded-3xl px-6" onClick={handleClearCart}>Vider</Button>
-          <Button className="h-12 rounded-3xl px-8" onClick={handleCreateOrder}>Payer</Button>
+          <Button 
+            variant="secondary" 
+            className="h-12 rounded-3xl px-6" 
+            onClick={handleClearCart}
+            aria-label="Vider le panier"
+          >
+            Vider
+          </Button>
+          <Button 
+            className="h-12 rounded-3xl px-8" 
+            onClick={handleCreateOrder}
+            aria-label="Créer la commande"
+          >
+            Payer
+          </Button>
         </div>
       </div>
+      
       )}
 
       {showSuccess && (
@@ -162,16 +207,23 @@ export default function page() {
       )}
 
       {warningMessage && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-sm flex items-center justify-center z-50">
+        <div 
+          className="fixed top-0 left-0 right-0 bottom-0 backdrop-blur-sm flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="warning-title"
+          aria-describedby="warning-description"
+        >
           <div className="bg-white rounded p-6 max-w-md w-11/12 shadow-2xl">
-            <h3 className="text-xl font-bold mb-3">Attention</h3>
-            <p className="mb-5">
+            <h3 id="warning-title" className="text-xl font-bold mb-3">Attention</h3>
+            <p id="warning-description" className="mb-5">
               Vous devez être connecté en tant que client pour créer une commande. Veuillez vous connecter pour continuer.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setWarningMessage(false)}
-                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300"
+                className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                aria-label="Annuler"
               >
                 Annuler
               </button>
@@ -180,7 +232,8 @@ export default function page() {
                   setWarningMessage(false);
                   router.push('/login');
                 }}
-                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                aria-label="Aller à la page de connexion"
               >
                 Se connecter
               </button>
@@ -188,6 +241,6 @@ export default function page() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }

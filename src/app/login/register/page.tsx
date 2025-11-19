@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/app/store/authStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -17,22 +18,25 @@ export default function RegisterPage() {
   const { register, isLoading, error, clearError } = useAuthStore();
   const router = useRouter();
 
+  const [validationError, setValidationError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+    setValidationError('');
 
     if (!email || !password || !name) {
-      alert('Please fill in all fields');
+      setValidationError('Veuillez remplir tous les champs');
       return;
     }
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      setValidationError('Les mots de passe ne correspondent pas');
       return;
     }
 
     if (password.length < 6) {
-      alert('Password must be at least 6 characters');
+      setValidationError('Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
 
@@ -55,75 +59,94 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center px-4'>
+    <main id="main-content" className='min-h-screen flex items-center justify-center px-4'>
+      <Button variant="secondary" onClick={() => router.push('/restaurant')} aria-label="Retour à la page précédente"><ArrowLeft /></Button>
       <div className='w-full max-w-md bg-white rounded-2xl shadow-sm p-6 sm:p-8'>
         <h1 className='text-2xl font-semibold mb-2'>Créer un compte</h1>
         <p className='text-sm text-muted-foreground mb-6'>
           Rejoignez RestoDigital et commencez à commander
         </p>
 
-        {error && (
-          <div className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'>
-            {error}
+        {(error || validationError) && (
+          <div 
+            className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'
+            role="alert"
+            aria-live="assertive"
+          >
+            {error || validationError}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-          <Input
-            placeholder='Nom complet'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label="Formulaire de création de compte">
+          <div>
+            <label htmlFor="register-name" className="sr-only">
+              Nom complet
+            </label>
+            <Input
+              id="register-name"
+              placeholder='Nom complet'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              aria-label="Nom complet"
+              aria-invalid={!!(error || validationError)}
+            />
+          </div>
           
-          <Input
-            type='email'
-            placeholder='Email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div>
+            <label htmlFor="register-email" className="sr-only">
+              Email
+            </label>
+            <Input
+              id="register-email"
+              type='email'
+              placeholder='Email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              aria-label="Adresse email"
+              aria-invalid={!!(error || validationError)}
+            />
+          </div>
           
-          <Input
-            type='password'
-            placeholder='Mot de passe'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-          />
+          <div>
+            <label htmlFor="register-password" className="sr-only">
+              Mot de passe
+            </label>
+            <Input
+              id="register-password"
+              type='password'
+              placeholder='Mot de passe'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              aria-label="Mot de passe (minimum 6 caractères)"
+              aria-invalid={!!(error || validationError)}
+            />
+          </div>
           
-          <Input
-            type='password'
-            placeholder='Confirmer le mot de passe'
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-
-          <div className='flex gap-2'>
-            <Button
-              type='button'
-              variant={role === 'customer' ? 'default' : 'outline'}
-              className='flex-1'
-              onClick={() => setRole('customer')}
-            >
-              Client
-            </Button>
-            <Button
-              type='button'
-              variant={role === 'restaurateur' ? 'default' : 'outline'}
-              className='flex-1'
-              onClick={() => setRole('restaurateur')}
-            >
-              Restaurateur
-            </Button>
+          <div>
+            <label htmlFor="register-confirm-password" className="sr-only">
+              Confirmer le mot de passe
+            </label>
+            <Input
+              id="register-confirm-password"
+              type='password'
+              placeholder='Confirmer le mot de passe'
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              aria-label="Confirmer le mot de passe"
+              aria-invalid={!!(error || validationError)}
+            />
           </div>
 
           <Button
             type='submit'
             className='mt-2 w-full h-12 rounded-3xl'
             disabled={isLoading}
+            aria-label={isLoading ? 'Création du compte en cours...' : 'Créer un compte'}
           >
             {isLoading ? 'Création...' : 'Créer un compte'}
           </Button>
@@ -131,12 +154,16 @@ export default function RegisterPage() {
 
         <p className='mt-6 text-center text-sm text-muted-foreground'>
           Déjà un compte?{' '}
-          <Link href='/login' className='text-primary hover:underline'>
+          <Link 
+            href='/login' 
+            className='text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded'
+            aria-label="Aller à la page de connexion"
+          >
             Se connecter
           </Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 }
 
