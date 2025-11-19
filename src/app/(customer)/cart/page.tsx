@@ -79,8 +79,8 @@ export default function page() {
   
   const totalPrice = useMemo(() => {
     if (!mounted) return 0;
-    return getTotalPrice(userId);
-  }, [mounted, userId, getTotalPrice]);
+    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+  }, [mounted, items]);
 
   const addPlat = (id: number) => {
     const item = items.find(i => i.id === id);

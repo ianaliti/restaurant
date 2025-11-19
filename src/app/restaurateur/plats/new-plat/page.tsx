@@ -20,17 +20,20 @@ export default function NewPlatPage() {
   });
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const [validationError, setValidationError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError('');
     
     if (!formData.name || !formData.price || !user?.id) {
-      alert('Veuillez remplir tous les champs obligatoires');
+      setValidationError('Veuillez remplir tous les champs obligatoires');
       return;
     }
 
     const price = parseFloat(formData.price);
     if (isNaN(price) || price <= 0) {
-      alert('Le prix doit être un nombre valide');
+      setValidationError('Le prix doit être un nombre valide');
       return;
     }
 
@@ -49,7 +52,7 @@ export default function NewPlatPage() {
       });
       setShowSuccess(true);
     } catch (error) {
-      alert('Erreur lors de la création du plat');
+      console.error('Erreur lors de la création du plat');
     }
   };
 
@@ -58,26 +61,45 @@ export default function NewPlatPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold">Nouveau plat</h1>
-          <Button variant="outline" onClick={() => router.push('/restaurateur/plats')}>
+          <Button 
+            variant="outline" 
+            onClick={() => router.push('/restaurateur/plats')}
+            aria-label="Retour à la liste des plats"
+            className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          >
             Retour
           </Button>
         </div>
 
+        {validationError && (
+          <div 
+            className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm"
+            role="alert"
+            aria-live="assertive"
+          >
+            {validationError}
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" aria-label="Formulaire de création de plat">
             <div>
-              <label className="text-sm font-medium mb-1 block">Nom du plat</label>
+              <label htmlFor="plat-name" className="text-sm font-medium mb-1 block">Nom du plat</label>
               <Input
+                id="plat-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Nom du plat"
                 required
+                aria-label="Nom du plat"
+                aria-invalid={!!validationError}
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block">Prix (€)</label>
+              <label htmlFor="plat-price" className="text-sm font-medium mb-1 block">Prix (€)</label>
               <Input
+                id="plat-price"
                 type="number"
                 step="0.01"
                 min="0"
@@ -85,26 +107,36 @@ export default function NewPlatPage() {
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 placeholder="Prix"
                 required
+                aria-label="Prix en euros"
+                aria-invalid={!!validationError}
               />
             </div>
             
             <div>
-              <label className="text-sm font-medium mb-1 block">URL de l'image</label>
+              <label htmlFor="plat-image" className="text-sm font-medium mb-1 block">URL de l'image</label>
               <Input
+                id="plat-image"
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 placeholder="https://example.com/image.jpg"
+                aria-label="URL de l'image du plat"
               />
             </div>
             
             <div className="flex gap-3 pt-4">
-              <Button type="submit" className="flex-1">
+              <Button 
+                type="submit" 
+                className="flex-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                aria-label="Créer le plat"
+              >
                 Créer le plat
               </Button>
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => router.push('/restaurateur/plats')}
+                aria-label="Annuler et retourner à la liste des plats"
+                className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 Annuler
               </Button>

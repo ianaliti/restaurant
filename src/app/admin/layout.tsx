@@ -14,7 +14,7 @@ export default function AdminLayout({
       <div className="max-w-7xl mx-auto py-8 w-auto">
         <div className="flex gap-6">
           <AdminSidebar />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1">{children}</main>
         </div>
       </div>
     </>

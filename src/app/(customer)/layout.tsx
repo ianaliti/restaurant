@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import Navbar from "@/app/(customer)/components/navbar/Navbar";
-import { SkipLink } from "@/components/accessibility/SkipLink";
 
 export const metadata: Metadata = {
   title: "Customer | Resto Digital",
@@ -14,7 +13,6 @@ export default function CustomerLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
       <div>
-        <SkipLink />
         <Navbar />
         {children}
       </div>

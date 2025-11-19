@@ -60,7 +60,6 @@ export default function RegisterPage() {
 
   return (
     <main id="main-content" className='min-h-screen flex items-center justify-center px-4'>
-      <Button variant="secondary" onClick={() => router.push('/restaurant')} aria-label="Retour à la page précédente"><ArrowLeft /></Button>
       <div className='w-full max-w-md bg-white rounded-2xl shadow-sm p-6 sm:p-8'>
         <h1 className='text-2xl font-semibold mb-2'>Créer un compte</h1>
         <p className='text-sm text-muted-foreground mb-6'>

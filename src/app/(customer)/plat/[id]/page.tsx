@@ -1,5 +1,5 @@
 "use client";
-import { use, useMemo } from "react";
+import { use, useMemo, useState } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Plat } from "@/types/restaurants.type";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { Toast } from "@/components/ui/Toast";
 
 export default function page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -44,6 +45,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
   const addItem = useCartStore((state) => state.addItem);
   const { user } = useAuthStore();
   const router = useRouter();
+  const [showToast, setShowToast] = useState(false);
 
   const plat: (Plat & { restaurantId: number }) | undefined = allPlats.find(
     (p) => p.id === idNumber
@@ -51,9 +53,12 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
 
   if (!plat) return notFound();
 
+  console.log(plat.image);
+
   const handleAddToCart = () => {
     const userId = user?.id || "guest";
     addItem(plat, userId);
+    setShowToast(true);
   };
 
   return (
@@ -62,9 +67,9 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
         <ArrowLeft />
       </Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="relative w-full overflow-hidden rounded-2xl shadow-sm">
+        <div className="relative w-full h-64 md:h-96 overflow-hidden rounded-2xl shadow-sm bg-gray-100">
           <Image
-            src={plat.image}
+            src={plat.image || '/placeholder-plat.jpg'}
             alt={`Image du plat ${plat.name}`}
             fill
             className="object-cover"
@@ -95,6 +100,12 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
           </Button>
         </div>
       </div>
+      {showToast && (
+        <Toast
+          message={`${plat.name} ajouté au panier avec succès!`}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </main>
   );
 }

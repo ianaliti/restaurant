@@ -71,21 +71,28 @@ export default function CommandesPage() {
         </div>
 
         {restaurateurOrders.length === 0 ? (
-          <div className='bg-white rounded-lg shadow-sm p-8 text-center'>
+          <div className='bg-white rounded-lg shadow-sm p-8 text-center' role="status" aria-live="polite">
             <p className='text-muted-foreground'>Aucune commande pour le moment.</p>
           </div>
         ) : (
-          <div className='space-y-4'>
+          <section aria-label="Liste des commandes" className='space-y-4'>
             {restaurateurOrders.map((order) => {
               const orderItems = getOrderItemsForRestaurateur(order);
               const orderTotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
               
               return (
-                <div key={order.id} className='bg-white rounded-lg shadow-sm p-6'>
+                <article 
+                  key={order.id} 
+                  className='bg-white rounded-lg shadow-sm p-6'
+                  aria-label={`Commande ${order.id} du ${new Date(order.date).toLocaleDateString('fr-FR')}`}
+                >
                   <div className='flex items-center justify-between mb-4 pb-4 border-b'>
                     <div>
                       <h3 className='text-lg font-semibold'>Commande #{order.id}</h3>
-                      <p className='text-sm text-muted-foreground'>
+                      <time 
+                        className='text-sm text-muted-foreground'
+                        dateTime={order.date}
+                      >
                         {new Date(order.date).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'long',
@@ -93,10 +100,10 @@ export default function CommandesPage() {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}
-                      </p>
+                      </time>
                     </div>
                     <div className='text-right'>
-                      <p className='text-lg font-semibold text-primary'>
+                      <p className='text-lg font-semibold text-primary' aria-label={`Total: ${orderTotal.toFixed(2)}€`}>
                         €{orderTotal.toFixed(2)}
                       </p>
                       <p className='text-xs text-muted-foreground'>
@@ -105,9 +112,9 @@ export default function CommandesPage() {
                     </div>
                   </div>
 
-                  <div className='space-y-2'>
+                  <div className='space-y-2' role="list" aria-label="Articles de la commande">
                     {orderItems.map((item) => (
-                      <div key={item.id} className='flex items-center justify-between py-2 border-b last:border-0'>
+                      <div key={item.id} className='flex items-center justify-between py-2 border-b last:border-0' role="listitem">
                         <div className='flex-1'>
                           <p className='font-medium'>{item.name}</p>
                           <p className='text-sm text-muted-foreground'>
@@ -115,17 +122,17 @@ export default function CommandesPage() {
                           </p>
                         </div>
                         <div className='text-right'>
-                          <p className='font-semibold'>
+                          <p className='font-semibold' aria-label={`Sous-total: ${(item.price * item.quantity).toFixed(2)}€`}>
                             €{(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                </article>
               );
             })}
-          </div>
+          </section>
         )}
       </div>
     </ProtectedRoute>
