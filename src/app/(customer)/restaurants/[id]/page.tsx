@@ -1,5 +1,5 @@
 'use client'
-import { use, useMemo } from 'react'
+import { use, useMemo, useState } from 'react'
 import { notFound } from 'next/navigation';
 import CardComponent from '@/components/card/CardComponent';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { mockRestaurants, mockPlats } from '@/mock-data/data';
+import { SearchInput } from '@/components/ui/SearchInput';
  
 export default function page({
   params,
@@ -17,6 +18,7 @@ export default function page({
 }) {
   const { id } = use(params);
   const idNumber = Number(id);
+  const [searchQuery, setSearchQuery] = useState("");
   
   const userRestaurants = useRestaurantStore(state => state.restaurants);
   const userPlats = usePlatStore(state => state.plats);
@@ -33,7 +35,7 @@ export default function page({
   if (!restaurant) return notFound();
 
   const restaurantPlats = useMemo(() => {
-    return allPlats
+    const allRestaurantPlats = allPlats
       .filter(p => p.userId === restaurant.userId)
       .map(plat => ({
         id: Number(plat.id) || parseInt(plat.id, 10) || 0,
@@ -41,7 +43,16 @@ export default function page({
         price: plat.price,
         image: plat.image,
       }));
-  }, [allPlats, restaurant.userId]);
+
+    if (!searchQuery.trim()) {
+      return allRestaurantPlats;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    return allRestaurantPlats.filter((plat) =>
+      plat.name.toLowerCase().includes(query)
+    );
+  }, [allPlats, restaurant.userId, searchQuery]);
  
   return (
     <main id="main-content" className='max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6'>
@@ -52,9 +63,20 @@ export default function page({
           {restaurant.address}, {restaurant.codePostal} {restaurant.city}
         </p>
       </div>
+      <SearchInput
+        id="plat-search"
+        placeholder="Rechercher un plat"
+        value={searchQuery}
+        onChange={setSearchQuery}
+        ariaLabel="Rechercher un plat dans ce restaurant"
+      />
       {restaurantPlats.length === 0 ? (
         <div className='text-center py-12' role="status" aria-live="polite">
-          <p className='text-muted-foreground'>Aucun plat disponible pour ce restaurant.</p>
+          <p className='text-muted-foreground'>
+            {searchQuery.trim() 
+              ? `Aucun plat trouvé pour "${searchQuery}"` 
+              : 'Aucun plat disponible pour ce restaurant.'}
+          </p>
         </div>
       ) : (
         <section aria-label="Plats disponibles" className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
