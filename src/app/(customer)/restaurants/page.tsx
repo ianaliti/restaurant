@@ -5,19 +5,21 @@ import { Input } from "@/components/ui/input";
 import CardComponent from "@/components/card/CardComponent";
 import Link from "next/link";
 import { useRestaurantStore } from "@/app/store/restaurantStore";
+import { mockRestaurants } from "@/mock-data/data";
 
 const page = () => {
-  const restaurants = useRestaurantStore(state => state.restaurants);
+  const userRestaurants = useRestaurantStore(state => state.restaurants);
+  const allRestaurants = useMemo(() => [...mockRestaurants, ...userRestaurants], [userRestaurants]);
 
   const displayRestaurants = useMemo(() => {
-    return restaurants.map((resto) => ({
+    return allRestaurants.map((resto) => ({
       id: resto.id,
       userId: resto.userId,
       name: resto.name,
       address: `${resto.address}, ${resto.codePostal} ${resto.city}`,
       image: resto.image || '/default-restaurant.jpg',
     }));
-  }, [restaurants]);
+  }, [allRestaurants]);
 
   return (
     <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6">
@@ -41,7 +43,7 @@ const page = () => {
         ) : (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
             {displayRestaurants.map((resto) => (
-              <Link href={`/restaurants/${resto.id}`} key={resto.userId}>
+              <Link href={`/restaurants/${resto.id}`} key={resto.id}>
                 <CardComponent
                   name={resto.name}
                   id={resto.id}

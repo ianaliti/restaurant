@@ -12,19 +12,23 @@ import { Plat } from "@/types/restaurants.type";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Toast } from "@/components/ui/Toast";
+import { mockRestaurants, mockPlats } from "@/mock-data/data";
 
 export default function page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const idNumber = Number(id);
 
-  const allPlatsFromStore = usePlatStore((state) => state.getAllPlats());
-  const restaurants = useRestaurantStore((state) => state.getAllRestaurants());
+  const userPlats = usePlatStore((state) => state.plats);
+  const userRestaurants = useRestaurantStore((state) => state.restaurants);
+  
+  const allPlatsFromStore = useMemo(() => [...mockPlats, ...userPlats], [userPlats]);
+  const allRestaurants = useMemo(() => [...mockRestaurants, ...userRestaurants], [userRestaurants]);
 
   const allPlats: (Plat & { restaurantId: number })[] = useMemo(() => {
     const platsWithRestaurantId: (Plat & { restaurantId: number })[] = [];
 
     allPlatsFromStore.forEach((platData) => {
-      const restaurant = restaurants.find((r) => r.userId === platData.userId);
+      const restaurant = allRestaurants.find((r) => r.userId === platData.userId);
       if (restaurant) {
         const platNumericId =
           Number(platData.id) || parseInt(platData.id, 10) || 0;
@@ -40,7 +44,7 @@ export default function page({ params }: { params: Promise<{ id: string }> }) {
     });
 
     return platsWithRestaurantId;
-  }, [allPlatsFromStore, restaurants]);
+  }, [allPlatsFromStore, allRestaurants]);
 
   const addItem = useCartStore((state) => state.addItem);
   const { user } = useAuthStore();

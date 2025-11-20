@@ -8,6 +8,7 @@ import { usePlatStore } from '@/app/store/platStore';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { mockRestaurants, mockPlats } from '@/mock-data/data';
  
 export default function page({
   params,
@@ -17,14 +18,17 @@ export default function page({
   const { id } = use(params);
   const idNumber = Number(id);
   
-  const restaurants = useRestaurantStore(state => state.getAllRestaurants());
-  const allPlats = usePlatStore(state => state.getAllPlats());
+  const userRestaurants = useRestaurantStore(state => state.restaurants);
+  const userPlats = usePlatStore(state => state.plats);
+  
+  const allRestaurants = useMemo(() => [...mockRestaurants, ...userRestaurants], [userRestaurants]);
+  const allPlats = useMemo(() => [...mockPlats, ...userPlats], [userPlats]);
 
   const router = useRouter();
 
   const restaurant = useMemo(() => {
-    return restaurants.find((resto) => resto.id === idNumber);
-  }, [restaurants, idNumber]);
+    return allRestaurants.find((resto) => resto.id === idNumber);
+  }, [allRestaurants, idNumber]);
 
   if (!restaurant) return notFound();
 
