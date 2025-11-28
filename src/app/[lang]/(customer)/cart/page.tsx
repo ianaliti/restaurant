@@ -12,6 +12,7 @@ import type { CartItem } from "@/types/restaurants.type";
 import { useRouter, usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
+import { findById } from "@/types/utils.type";
 
 export default function CartPage({
   params,
@@ -43,7 +44,7 @@ export default function CartPage({
         const userCart = useCartStore.getState().userCarts[user.id] || [];
         const mergedCart = [...userCart];
         guestCart.forEach(guestItem => {
-          const existing = mergedCart.find(item => item.id === guestItem.id);
+          const existing = findById(mergedCart, guestItem.id);
           if (existing) {
             existing.quantity += guestItem.quantity;
           } else {
@@ -86,14 +87,14 @@ export default function CartPage({
   }, [mounted, items]);
 
   const addPlat = (id: number) => {
-    const item = items.find(i => i.id === id);
+    const item = findById(items, id);
     if (item) {
       updateQuantity(id, (item.quantity || 1) + 1, userId);
     }
   };
 
   const deletePlat = (id: number) => {
-    const item = items.find(i => i.id === id);
+    const item = findById(items, id);
     if (item) {
       updateQuantity(id, Math.max(0, (item.quantity || 1) - 1), userId);
     }

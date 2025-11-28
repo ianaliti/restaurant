@@ -1,4 +1,4 @@
-import type { User, UserWithPassword } from '@/types/user.type';
+import type { User, UserWithPassword, UserRole } from '@/types/user.type';
 
 const MOCK_USERS_KEY = 'mock-users-storage';
 
@@ -47,7 +47,7 @@ export const createUserWithoutLogin = (
   email: string,
   password: string,
   name: string,
-  role: 'customer' | 'restaurateur' | 'admin' = 'customer'
+  role: UserRole = 'customer'
 ): User => {
   const users = getMockUsers();
   

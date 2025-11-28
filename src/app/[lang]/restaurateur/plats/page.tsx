@@ -64,7 +64,7 @@ export default function PlatsPage() {
                     <CardComponent
                       key={resto.id}
                       name={resto.name}
-                      id={resto.id}
+                      id={Number(resto.id) || undefined}
                       image={resto.image}
                     />
                   </Link>

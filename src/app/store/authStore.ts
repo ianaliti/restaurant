@@ -5,6 +5,7 @@ import { getMockUsers, saveMockUsers } from './userStore';
 import { useRestaurantStore } from './restaurantStore';
 import { usePlatStore } from './platStore';
 import { useCartStore } from './cartStore';
+import { findById } from '@/types/utils.type';
 
 interface AuthState {
   user: User | null;
@@ -121,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
         set({ error: null });
       },
 
-      updateProfile: async (name: string, email: string) => {
+          updateProfile: async (name: string, email: string): Promise<void> => {
         set({ isLoading: true, error: null });
         
         try {
@@ -131,12 +132,13 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const users = getMockUsers();
-          const userIndex = users.findIndex(u => u.id === currentUser.id);
+          const existingUser = findById(users, currentUser.id);
           
-          if (userIndex === -1) {
+          if (!existingUser) {
             throw new Error('User not found');
           }
 
+          const userIndex = users.findIndex(u => u.id === currentUser.id);
           const emailTaken = users.find(u => u.email === email && u.id !== currentUser.id);
           if (emailTaken) {
             throw new Error('Email already in use');

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { WithoutId, UpdateData } from '@/types/utils.type';
+import { findByUserId, findById } from '@/types/utils.type';
 
 export interface PlatData {
   id: string;
@@ -9,11 +11,14 @@ export interface PlatData {
   image: string;
 }
 
+export type PlatInput = WithoutId<PlatData>;
+export type PlatUpdate = UpdateData<Omit<PlatData, 'userId'>>;
+
 interface PlatState {
   plats: PlatData[];
-  createPlat: (platData: Omit<PlatData, 'id'>) => PlatData;
+  createPlat: (platData: PlatInput) => PlatData;
   getPlatsByUserId: (userId: string) => PlatData[];
-  updatePlat: (platId: string, updates: Partial<Omit<PlatData, 'id' | 'userId'>>) => PlatData | null;
+  updatePlat: (platId: string, updates: PlatUpdate) => PlatData | null;
   deletePlat: (platId: string) => void;
   deletePlatsByUserId: (userId: string) => void;
   getAllPlats: () => PlatData[];
@@ -24,7 +29,7 @@ export const usePlatStore = create<PlatState>()(
     (set, get) => ({
       plats: [],
 
-      createPlat: (platData: Omit<PlatData, 'id'>) => {
+      createPlat: (platData: PlatInput) => {
         const newPlat: PlatData = {
           ...platData,
           id: Date.now().toString(),
@@ -35,19 +40,20 @@ export const usePlatStore = create<PlatState>()(
         return newPlat;
       },
 
-      getPlatsByUserId: (userId: string) => {
+      getPlatsByUserId: (userId: string): PlatData[] => {
         const plats = get().plats;
-        return plats.filter((p) => p.userId === userId);
+        return findByUserId(plats, userId);
       },
 
-      updatePlat: (platId: string, updates: Partial<Omit<PlatData, 'id' | 'userId'>>) => {
+      updatePlat: (platId: string, updates: PlatUpdate) => {
         const plats = get().plats;
-        const index = plats.findIndex((p) => p.id === platId);
-        if (index >= 0) {
-          const updated = [...plats];
-          updated[index] = { ...updated[index], ...updates };
+        const plat = findById(plats, platId);
+        if (plat) {
+          const updated = plats.map((p) => 
+            p.id === platId ? { ...p, ...updates } : p
+          );
           set({ plats: updated });
-          return updated[index];
+          return { ...plat, ...updates } as PlatData;
         }
         return null;
       },
@@ -59,12 +65,13 @@ export const usePlatStore = create<PlatState>()(
       },
 
       deletePlatsByUserId: (userId: string) => {
-        set((state) => ({
-          plats: state.plats.filter((p) => p.userId !== userId),
-        }));
+        set((state) => {
+          const platsToKeep = state.plats.filter((p) => p.userId !== userId);
+          return { plats: platsToKeep };
+        });
       },
 
-      getAllPlats: () => {
+      getAllPlats: (): PlatData[] => {
         return get().plats;
       },
     }),

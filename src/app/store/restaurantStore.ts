@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { WithoutId, UpdateData } from '@/types/utils.type';
+import { findByUserId, findById } from '@/types/utils.type';
 
 export interface RestaurantData {
   id: number;
@@ -12,22 +14,27 @@ export interface RestaurantData {
   image: string;
 }
 
+export type RestaurantInput = WithoutId<RestaurantData>;
+export type RestaurantUpdate = UpdateData<RestaurantData>;
+
 interface RestaurantState {
   restaurants: RestaurantData[];
-  createRestaurant: (restaurantData: Omit<RestaurantData, 'id'> | RestaurantData) => void;
+  createRestaurant: (restaurantData: RestaurantInput | RestaurantData) => void;
   getRestaurantByUserId: (userId: string) => RestaurantData | null;
   deleteRestaurantByUserId: (userId: string) => void;
   getAllRestaurants: () => RestaurantData[];
 }
 
-const migrateRestaurant = (restaurant: any): RestaurantData => {
+type RestaurantMigrationInput = Partial<RestaurantData> & Pick<RestaurantData, 'userId'>;
+
+const migrateRestaurant = (restaurant: RestaurantMigrationInput): RestaurantData => {
   if (restaurant.id) {
     return restaurant as RestaurantData;
   }
   return {
     ...restaurant,
     id: restaurant.userId.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0),
-  };
+  } as RestaurantData;
 };
 
 export const useRestaurantStore = create<RestaurantState>()(
@@ -35,11 +42,12 @@ export const useRestaurantStore = create<RestaurantState>()(
     (set, get) => ({
       restaurants: [],
 
-      createRestaurant: (restaurantData: Omit<RestaurantData, 'id'> | RestaurantData) => {
+      createRestaurant: (restaurantData: RestaurantInput | RestaurantData) => {
         set((state) => {
-          const existingIndex = state.restaurants.findIndex(
-            (r) => r.userId === restaurantData.userId
-          );
+          const existingRestaurants = findByUserId(state.restaurants, restaurantData.userId);
+          const existingIndex = existingRestaurants.length > 0 
+            ? state.restaurants.findIndex((r) => r.userId === restaurantData.userId)
+            : -1;
           
           const restaurantWithId: RestaurantData = 'id' in restaurantData && restaurantData.id
             ? restaurantData as RestaurantData
@@ -63,18 +71,20 @@ export const useRestaurantStore = create<RestaurantState>()(
         });
       },
 
-      getRestaurantByUserId: (userId: string) => {
+      getRestaurantByUserId: (userId: string): RestaurantData | null => {
         const restaurants = get().restaurants;
-        return restaurants.find((r) => r.userId === userId) || null;
+        const userRestaurants = findByUserId(restaurants, userId);
+        return userRestaurants[0] || null;
       },
 
       deleteRestaurantByUserId: (userId: string) => {
-        set((state) => ({
-          restaurants: state.restaurants.filter((r) => r.userId !== userId),
-        }));
+        set((state) => {
+          const restaurantsToKeep = state.restaurants.filter((r) => r.userId !== userId);
+          return { restaurants: restaurantsToKeep };
+        });
       },
 
-      getAllRestaurants: () => {
+      getAllRestaurants: (): RestaurantData[] => {
         return get().restaurants;
       },
     }),

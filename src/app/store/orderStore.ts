@@ -4,7 +4,7 @@ import { Order } from '@/types/restaurants.type';
 
 
 interface OrderState {
-    userOrders: { [userId: string]: Order[] };
+    userOrders: Record<string, Order[]>;
     addOrder: (order: Order) => void;
     getOrdersByUserId: (userId: string) => Order[];
 }

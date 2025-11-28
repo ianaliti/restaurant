@@ -2,10 +2,11 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { CartItem, Plat } from '@/types/restaurants.type';
 import { Order } from '@/types/restaurants.type';
+import { findById } from '@/types/utils.type';
 
 
 interface CartState {
-  userCarts: { [userId: string]: CartItem[] };
+  userCarts: Record<string, CartItem[]>;
   currentUserId: string | null;
   setCurrentUser: (userId: string | null) => void;
   getItems: () => CartItem[];
@@ -43,7 +44,7 @@ export const useCartStore = create<CartState>() (
       addItem: (item, userId) =>
         set((state) => {
           const userCart = state.userCarts[userId] || [];
-          const existing = userCart.find(i => i.id === item.id);
+          const existing = findById(userCart, item.id);
           
           if (existing) {
             return {

@@ -12,3 +12,6 @@ export interface UserWithPassword extends User {
   password: string;
 }
 
+export type UserInput = Omit<User, 'id' | 'createdAt'>;
+export type UserUpdate = Partial<Pick<User, 'name' | 'email'>>;
+
