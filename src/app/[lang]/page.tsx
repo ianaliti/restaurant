@@ -1,11 +1,10 @@
-import { getDictionary } from './dictionaries'
- 
-export default async function Page({
+import { redirect } from 'next/navigation';
+
+export default async function LangPage({
   params,
 }: {
-  params: Promise<{ lang: 'en' | 'fr' }>
+  params: Promise<{ lang: 'fr' | 'en' }>;
 }) {
-  const { lang } = await params
-  const dict = await getDictionary(lang) 
-  return <button>{dict.products.cart}</button> 
+  const { lang } = await params;
+  redirect(`/${lang}/restaurants`);
 }

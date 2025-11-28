@@ -1,17 +1,19 @@
-export async function generateStaticParams() {
-  return [{ lang: 'en-US' }, { lang: 'fr' }]
-}
- 
-export default async function RootLayout({
+import { getDictionary } from './dictionaries'
+import { DictionaryProvider } from "@/components/i18n/DictionaryProvider";
+
+export default async function LangLayout({
   children,
   params,
 }: Readonly<{
-  children: React.ReactNode
-  params: Promise<{ lang: 'en-US' | 'fr' }>
+  children: React.ReactNode;
+  params: Promise<{ lang: 'fr' | 'en' }>;
 }>) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
-    <html lang={(await params).lang}>
-      <body>{children}</body>
-    </html>
-  )
+    <DictionaryProvider dictionary={dict}>
+      {children}
+    </DictionaryProvider>
+  );
 }

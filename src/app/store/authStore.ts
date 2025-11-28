@@ -85,7 +85,13 @@ export const useAuthStore = create<AuthState>()(
 
           const { password: _, ...userWithoutPassword } = user;
 
-          useCartStore.getState().setCurrentUser(userWithoutPassword.id);
+          const cartStore = useCartStore.getState();
+          cartStore.setCurrentUser(userWithoutPassword.id);
+          
+          if (!cartStore.userCarts[userWithoutPassword.id]) {
+            cartStore.userCarts[userWithoutPassword.id] = [];
+          }
+          
           set({
             user: userWithoutPassword,
             isAuthenticated: true,
@@ -102,7 +108,8 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        useCartStore.getState().setCurrentUser(null);
+        const cartStore = useCartStore.getState();
+        cartStore.setCurrentUser(null);
         set({
           user: null,
           isAuthenticated: false,
