@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/auth/AuthProvider";
 import { SkipLink } from "@/components/accessibility/SkipLink";
 import { LangUpdater } from "@/components/i18n/LangUpdater";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <LangUpdater />
         <SkipLink />
+        <ServiceWorkerRegistration />
         <AuthProvider>
           {children}
         </AuthProvider>

@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/app/store/authStore';
-import { Message } from '@/components/ui/Message';
+import { LazyMessage as Message } from '@/components/ui/LazyComponents';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useDictionary } from '@/components/i18n/DictionaryProvider';
 

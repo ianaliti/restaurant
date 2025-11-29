@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/app/store/authStore";
 import { usePlatStore } from "@/app/store/platStore";
 import { useRouter, usePathname } from "next/navigation";
-import { Message } from "@/components/ui/Message";
+import { LazyMessage as Message } from "@/components/ui/LazyComponents";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 
 export default function NewPlatPage() {

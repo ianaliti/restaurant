@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/app/store/authStore";
 import { useRestaurantStore } from "@/app/store/restaurantStore";
-import { Message } from "@/components/ui/Message";
+import { LazyMessage as Message } from "@/components/ui/LazyComponents";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 
 export default function RestaurantPage() {

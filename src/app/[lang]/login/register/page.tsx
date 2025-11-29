@@ -60,7 +60,7 @@ export default function RegisterPage({
       }
     } catch (err) {
       console.error('Registration error:', err);
-      setValidationError(error instanceof Error ? error.message : dict.auth.register.emailTaken);
+      setValidationError(err instanceof Error ? err.message : dict.auth.register.emailTaken);
     }
   };
 

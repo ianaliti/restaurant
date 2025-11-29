@@ -7,7 +7,7 @@ import { useCartStore } from '@/app/store/cartStore';
 import { useAuthStore } from '@/app/store/authStore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Toast } from '@/components/ui/Toast';
+import { LazyToast as Toast } from '@/components/ui/LazyComponents';
 import { useDictionary } from '@/components/i18n/DictionaryProvider';
 import type { Plat } from '@/types/restaurants.type';
 

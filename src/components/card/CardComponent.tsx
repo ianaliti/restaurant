@@ -23,7 +23,7 @@ const CardComponent = ({ name, image, address }: CardProps) => {
           alt={address ? `Image du restaurant ${name} situé à ${address}` : `Image du restaurant ${name}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="min-width: 362px) 100vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
       </CardHeader>
       <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />

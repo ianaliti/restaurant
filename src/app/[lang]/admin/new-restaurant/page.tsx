@@ -7,7 +7,7 @@ import { useRestaurantStore } from "@/app/store/restaurantStore";
 import { createUserWithoutLogin } from "@/app/store/userStore";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Message } from "@/components/ui/Message";
+import { LazyMessage as Message } from "@/components/ui/LazyComponents";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 
 export default function Page() {

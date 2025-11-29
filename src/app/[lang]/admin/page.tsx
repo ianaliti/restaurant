@@ -7,7 +7,7 @@ import { getAllRestaurateurs } from "@/app/store/userStore";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { LazyConfirmDialog as ConfirmDialog } from "@/components/ui/LazyComponents";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 
 export default function AdminPage() {

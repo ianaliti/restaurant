@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useMemo, useEffect, useRef, use } from "react";
-import { Message } from "@/components/ui/Message";
+import { LazyMessage as Message } from "@/components/ui/LazyComponents";
 import type { CartItem } from "@/types/restaurants.type";
 import { useRouter, usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -133,7 +133,9 @@ export default function CartPage({
                   src={item.image} 
                   alt={`Image de ${item.name}`} 
                   fill 
-                  className="object-cover" 
+                  className="object-cover"
+                  sizes="96px"
+                  loading="lazy"
                 />
               </div>
               <div className="min-w-0">
