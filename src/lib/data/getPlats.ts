@@ -2,9 +2,13 @@ import type { PlatData } from '@/app/store/platStore';
 import { mockPlats } from '@/mock-data/data';
 
 export async function getPlats(): Promise<PlatData[]> {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    return mockPlats;
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = baseUrl ? `${baseUrl}/api/plats` : '/api/plats';
+    const url = `${baseUrl}/api/plats`;
     const response = await fetch(url, {
       next: { revalidate: 3600 },
     });
@@ -23,9 +27,13 @@ export async function getPlats(): Promise<PlatData[]> {
 export async function getPlatById(id: string | number): Promise<PlatData | null> {
   const idString = typeof id === 'number' ? id.toString() : id;
   
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    return mockPlats.find((p) => p.id === idString) || null;
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = baseUrl ? `${baseUrl}/api/plats/${idString}` : `/api/plats/${idString}`;
+    const url = `${baseUrl}/api/plats/${idString}`;
     const response = await fetch(url, {
       next: { revalidate: 3600 },
     });
@@ -50,9 +58,22 @@ export async function getPlatWithRestaurant(id: string | number): Promise<{
   
   if (!plat) return null;
 
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    const { getRestaurants } = await import('./getRestaurants');
+    const restaurants = await getRestaurants();
+    const restaurant = restaurants.find((r) => r.userId === plat.userId);
+    
+    if (!restaurant) return null;
+
+    return {
+      plat,
+      restaurantId: restaurant.id,
+    };
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = baseUrl ? `${baseUrl}/api/plats/${idString}` : `/api/plats/${idString}`;
+    const url = `${baseUrl}/api/plats/${idString}`;
     const response = await fetch(url, {
       next: { revalidate: 3600 },
     });

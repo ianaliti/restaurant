@@ -2,9 +2,13 @@ import type { RestaurantData } from '@/app/store/restaurantStore';
 import { mockRestaurants } from '@/mock-data/data';
 
 export async function getRestaurants(): Promise<RestaurantData[]> {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    return mockRestaurants;
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = baseUrl ? `${baseUrl}/api/restaurants` : '/api/restaurants';
+    const url = `${baseUrl}/api/restaurants`;
     const response = await fetch(url, {
       next: { revalidate: 3600 },
     });
@@ -21,9 +25,13 @@ export async function getRestaurants(): Promise<RestaurantData[]> {
 }
 
 export async function getRestaurantById(id: number): Promise<RestaurantData | null> {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    return mockRestaurants.find((r) => r.id === id) || null;
+  }
+
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = baseUrl ? `${baseUrl}/api/restaurants/${id}` : `/api/restaurants/${id}`;
+    const url = `${baseUrl}/api/restaurants/${id}`;
     const response = await fetch(url, {
       next: { revalidate: 3600 },
     });
