@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import CardComponent from '@/components/card/CardComponent';
 import Link from 'next/link';
 import { SearchInput } from '@/components/ui/SearchInput';
@@ -17,11 +17,9 @@ export function RestaurantsList({ restaurants, lang }: RestaurantsListProps) {
   const dict = useDictionary();
   const [searchQuery, setSearchQuery] = useState('');
   const getAllRestaurants = useRestaurantStore((state) => state.getAllRestaurants);
-  const [userRestaurants, setUserRestaurants] = useState<RestaurantData[]>([]);
-
-  useEffect(() => {
-    const userAdded = getAllRestaurants();
-    setUserRestaurants(userAdded);
+  
+  const userRestaurants = useMemo(() => {
+    return getAllRestaurants();
   }, [getAllRestaurants]);
 
   const displayRestaurants = useMemo(() => {
@@ -53,18 +51,18 @@ export function RestaurantsList({ restaurants, lang }: RestaurantsListProps) {
     <>
       <SearchInput
         id="restaurant-search"
-        placeholder={dict.common.searchRestaurant}
+        placeholder={dict.common?.searchRestaurant || (lang === 'en' ? 'Search for a restaurant' : 'Rechercher un restaurant')}
         value={searchQuery}
         onChange={setSearchQuery}
-        ariaLabel={dict.common.searchRestaurant}
+        ariaLabel={dict.common?.searchRestaurant || (lang === 'en' ? 'Search for a restaurant' : 'Rechercher un restaurant')}
       />
-      <div className="w-full" role="region" aria-label={dict.restaurants.title}>
+      <div className="w-full" role="region" aria-label={dict.restaurants?.title || (lang === 'en' ? 'Restaurants' : 'Restaurants')}>
         {displayRestaurants.length === 0 ? (
           <div className='text-center py-12'>
             <p className='text-muted-foreground'>
               {searchQuery.trim() 
-                ? dict.restaurants.noResults.replace('{{query}}', searchQuery)
-                : dict.restaurants.noRestaurants}
+                ? (dict.restaurants?.noResults?.replace('{{query}}', searchQuery) || (lang === 'en' ? `No restaurants found for "${searchQuery}"` : `Aucun restaurant trouvé pour "${searchQuery}"`))
+                : (dict.restaurants?.noRestaurants || (lang === 'en' ? 'No restaurants available at the moment.' : 'Aucun restaurant disponible pour le moment.'))}
             </p>
           </div>
         ) : (

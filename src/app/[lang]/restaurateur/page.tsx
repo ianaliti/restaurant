@@ -3,7 +3,7 @@
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuthStore } from "@/app/store/authStore";
 import { useRestaurantStore } from "@/app/store/restaurantStore";
 import { LazyMessage as Message } from "@/components/ui/LazyComponents";
@@ -14,29 +14,15 @@ export default function RestaurantPage() {
   const dict = useDictionary();
   const getRestaurantByUserId = useRestaurantStore(state => state.getRestaurantByUserId);
   const createRestaurant = useRestaurantStore(state => state.createRestaurant);
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    codePostal: '',
-    city: '',
-    image: '',
-  });
+  const existingRestaurant = user?.id ? getRestaurantByUserId(user.id) : null;
+  const [formData, setFormData] = useState(() => ({
+    name: existingRestaurant?.name || '',
+    address: existingRestaurant?.address || '',
+    codePostal: existingRestaurant?.codePostal || '',
+    city: existingRestaurant?.city || '',
+    image: existingRestaurant?.image || '',
+  }));
   const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    if (user?.id) {
-      const restaurant = getRestaurantByUserId(user.id);
-      if (restaurant) {
-        setFormData({
-          name: restaurant.name || '',
-          address: restaurant.address || '',
-          codePostal: restaurant.codePostal || '',
-          city: restaurant.city || '',
-          image: restaurant.image || '',
-        });
-      }
-    }
-  }, [user?.id, getRestaurantByUserId]);
 
   const [error, setError] = useState('');
 

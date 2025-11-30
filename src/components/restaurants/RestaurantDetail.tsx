@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useRestaurantStore } from '@/app/store/restaurantStore';
 import { RestaurantPlatsList } from './RestaurantPlatsList';
 import { BackButton } from '@/components/ui/BackButton';
@@ -12,23 +12,20 @@ interface RestaurantDetailProps {
   restaurant: RestaurantData | null;
   plats: PlatData[];
   lang: 'fr' | 'en';
-  dict: any;
+  dict: Record<string, unknown>;
 }
 
 export function RestaurantDetail({ restaurant: serverRestaurant, plats, lang, dict }: RestaurantDetailProps) {
   const params = useParams();
   const getAllRestaurants = useRestaurantStore((state) => state.getAllRestaurants);
-  const [restaurant, setRestaurant] = useState<RestaurantData | null>(serverRestaurant);
-
-  useEffect(() => {
-    if (!serverRestaurant && params.id) {
-      const userRestaurants = getAllRestaurants();
-      const idNumber = Number(params.id);
-      const found = userRestaurants.find((r) => r.id === idNumber);
-      if (found) {
-        setRestaurant(found);
-      }
-    }
+  
+  const restaurant = useMemo(() => {
+    if (serverRestaurant) return serverRestaurant;
+    if (!params.id) return null;
+    
+    const userRestaurants = getAllRestaurants();
+    const idNumber = Number(params.id);
+    return userRestaurants.find((r) => r.id === idNumber) || null;
   }, [serverRestaurant, params.id, getAllRestaurants]);
 
   if (!restaurant) {
@@ -40,7 +37,7 @@ export function RestaurantDetail({ restaurant: serverRestaurant, plats, lang, di
       <BackButton lang={lang} />
       <div className='flex flex-col gap-2'>
         <h1 className='text-2xl sm:text-3xl font-bold'>{restaurant.name}</h1>
-        <p className='text-muted-foreground max-w-3xl' aria-label={`${dict.restaurants.address}: ${restaurant.address}, ${restaurant.codePostal} ${restaurant.city}`}>
+        <p className='text-muted-foreground max-w-3xl' aria-label={`Address: ${restaurant.address}, ${restaurant.codePostal} ${restaurant.city}`}>
           {restaurant.address}, {restaurant.codePostal} {restaurant.city}
         </p>
       </div>

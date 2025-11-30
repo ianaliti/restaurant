@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/app/store/authStore';
 import type { UserRole } from '@/types/user.type';
 
@@ -14,16 +14,15 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({
   children,
   requiredRole,
-  redirectTo = '/login',
+  redirectTo,
 }: ProtectedRouteProps) {
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const lang = pathname?.split('/')[1] || 'fr';
+  const defaultRedirect = `/${lang}/restaurants`;
+  const [mounted] = useState(true);
   const [isChecking, setIsChecking] = useState(true);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted) return;
@@ -55,18 +54,19 @@ export default function ProtectedRoute({
   useEffect(() => {
     if (!mounted || isChecking) return;
     if (!isAuthenticated) {
-      router.push(redirectTo);
+      const targetPath = redirectTo || defaultRedirect;
+      router.push(targetPath);
       return;
     }
 
     if (requiredRole) {
       const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
       if (user && !roles.includes(user.role)) {
-        router.push('/');
+        router.push(`/${lang}/restaurants`);
         return;
       }
     }
-  }, [mounted, isChecking, isAuthenticated, user, requiredRole, redirectTo, router]);
+  }, [mounted, isChecking, isAuthenticated, user, requiredRole, redirectTo, router, defaultRedirect, lang]);
 
   if (!mounted || isChecking) {
     return (

@@ -17,7 +17,7 @@ export default function AdminSidebar() {
 
   const handleLogout = () => {
     logout();
-    router.push(`/${lang}/login`);
+    router.push(`/${lang}/restaurants`);
   };
 
   const isActive = pathname === adminHref || pathname?.startsWith(`/${lang}/admin`);

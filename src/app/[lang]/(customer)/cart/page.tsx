@@ -6,10 +6,10 @@ import { useAuthStore } from "@/app/store/authStore";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState, useMemo, useEffect, useRef, use } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import { LazyMessage as Message } from "@/components/ui/LazyComponents";
 import type { CartItem } from "@/types/restaurants.type";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 import { findById } from "@/types/utils.type";
@@ -23,7 +23,6 @@ export default function CartPage({
   const { user } = useAuthStore();
   const isCustomer = user?.role === 'customer';
   const router = useRouter();
-  const pathname = usePathname();
   const dict = useDictionary();
   
   const userId = user?.id || 'guest';
@@ -65,17 +64,12 @@ export default function CartPage({
   const updateQuantity = useCartStore(state => state.updateQuantity);
   const removeItem = useCartStore(state => state.removeItem);
   const clearCart = useCartStore(state => state.clearCart);
-  const getTotalPrice = useCartStore(state => state.getTotalPrice);
   const createOrder = useCartStore(state => state.createOrder);
   const addOrder = useOrderStore((state) => state.addOrder);
   
   const [showSuccess, setShowSuccess] = useState(false);
   const [warningMessage, setWarningMessage] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted] = useState(true);
 
   useEffect(() => {
     useCartStore.getState().setCurrentUser(userId);

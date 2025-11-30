@@ -33,17 +33,17 @@ export default function RegisterPage({
     setValidationError('');
 
     if (!email || !password || !name) {
-      setValidationError(dict.auth.register.fillAllFields);
+      setValidationError(dict.auth?.register?.fillAllFields || 'Veuillez remplir tous les champs');
       return;
     }
 
     if (password !== confirmPassword) {
-      setValidationError(dict.auth.register.passwordMismatch);
+      setValidationError(dict.auth?.register?.passwordMismatch || 'Les mots de passe ne correspondent pas');
       return;
     }
 
     if (password.length < 6) {
-      setValidationError(dict.auth.register.passwordTooShort);
+      setValidationError(dict.auth?.register?.passwordTooShort || 'Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
 
@@ -60,7 +60,7 @@ export default function RegisterPage({
       }
     } catch (err) {
       console.error('Registration error:', err);
-      setValidationError(err instanceof Error ? err.message : dict.auth.register.emailTaken);
+      setValidationError(err instanceof Error ? err.message : dict.auth?.register?.emailTaken || 'Cet email est déjà utilisé');
     }
   };
 
@@ -70,9 +70,9 @@ export default function RegisterPage({
         <div className="absolute top-4 right-4">
           <LanguageSwitcher />
         </div>
-        <h1 className='text-2xl font-semibold mb-2'>{dict.auth.register.title}</h1>
+        <h1 className='text-2xl font-semibold mb-2'>{dict.auth?.register?.title || 'Créer un compte'}</h1>
         <p className='text-sm text-muted-foreground mb-6'>
-          {dict.auth.register.subtitle}
+          {dict.auth?.register?.subtitle || 'Rejoignez RestoDigital et commencez à commander'}
         </p>
 
         {(error || validationError) && (
@@ -85,67 +85,67 @@ export default function RegisterPage({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label={dict.auth.register.formLabel}>
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label={dict.auth?.register?.formLabel || 'Formulaire de création de compte'}>
           <div>
             <label htmlFor="register-name" className="sr-only">
-              {dict.auth.register.fullName}
+              {dict.auth?.register?.fullName || 'Nom complet'}
             </label>
             <Input
               id="register-name"
-              placeholder={dict.auth.register.fullName}
+              placeholder={dict.auth?.register?.fullName || 'Nom complet'}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              aria-label={dict.auth.register.fullName}
+              aria-label={dict.auth?.register?.fullName || 'Nom complet'}
               aria-invalid={!!(error || validationError)}
             />
           </div>
           
           <div>
             <label htmlFor="register-email" className="sr-only">
-              {dict.auth.register.email}
+              {dict.auth?.register?.email || 'Email'}
             </label>
             <Input
               id="register-email"
               type='email'
-              placeholder={dict.auth.register.email}
+              placeholder={dict.auth?.register?.email || 'Email'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              aria-label={dict.auth.register.email}
+              aria-label={dict.auth?.register?.email || 'Email'}
               aria-invalid={!!(error || validationError)}
             />
           </div>
           
           <div>
             <label htmlFor="register-password" className="sr-only">
-              {dict.auth.register.password}
+              {dict.auth?.register?.password || 'Mot de passe'}
             </label>
             <Input
               id="register-password"
               type='password'
-              placeholder={dict.auth.register.password}
+              placeholder={dict.auth?.register?.password || 'Mot de passe'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              aria-label={dict.auth.register.password}
+              aria-label={dict.auth?.register?.password || 'Mot de passe'}
               aria-invalid={!!(error || validationError)}
             />
           </div>
           
           <div>
             <label htmlFor="register-confirm-password" className="sr-only">
-              {dict.auth.register.confirmPassword}
+              {dict.auth?.register?.confirmPassword || 'Confirmer le mot de passe'}
             </label>
             <Input
               id="register-confirm-password"
               type='password'
-              placeholder={dict.auth.register.confirmPassword}
+              placeholder={dict.auth?.register?.confirmPassword || 'Confirmer le mot de passe'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              aria-label={dict.auth.register.confirmPassword}
+              aria-label={dict.auth?.register?.confirmPassword || 'Confirmer le mot de passe'}
               aria-invalid={!!(error || validationError)}
             />
           </div>
@@ -154,23 +154,24 @@ export default function RegisterPage({
             type='submit'
             className='mt-2 w-full h-12 rounded-3xl'
             disabled={isLoading}
-            aria-label={isLoading ? dict.auth.register.submitting : dict.auth.register.submit}
+            aria-label={isLoading ? dict.auth?.register?.submitting : dict.auth?.register?.submit}
           >
-            {isLoading ? dict.auth.register.submitting : dict.auth.register.submit}
+            {isLoading ? dict.auth?.register?.submitting || 'Création...' : dict.auth?.register?.submit || 'Créer un compte'}
           </Button>
         </form>
 
         <p className='mt-6 text-center text-sm text-muted-foreground'>
-          {dict.auth.register.hasAccount}{' '}
+          {dict.auth?.register?.hasAccount || 'Déjà un compte?'}{' '}
           <Link 
             href={`/${lang}/login`} 
             className='text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded'
-            aria-label={dict.auth.register.login}
+            aria-label={dict.auth?.register?.login || 'Se connecter'}
           >
-            {dict.auth.register.login}
+            {dict.auth?.register?.login || 'Se connecter'}
           </Link>
         </p>
       </div>
     </main>
   );
 }
+

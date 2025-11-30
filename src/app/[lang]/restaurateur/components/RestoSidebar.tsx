@@ -19,7 +19,7 @@ export default function RestoSidebar() {
 
   const handleLogout = () => {
     logout();
-    router.push(`/${lang}/login`);
+    router.push(`/${lang}/restaurants`);
   };
 
   const isDashboardActive = pathname === dashboardHref;

@@ -13,19 +13,12 @@ export default function ProfilePage({
 }: {
   params: Promise<{ lang: 'fr' | 'en' }>;
 }) {
-  const { lang } = use(params);
+  const { lang: _lang } = use(params);
   const { user, updateProfile, isLoading, error } = useAuthStore();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(() => user?.name || '');
+  const [email, setEmail] = useState(() => user?.email || '');
   const [showSuccess, setShowSuccess] = useState(false);
   const dict = useDictionary();
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name || '');
-      setEmail(user.email || '');
-    }
-  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

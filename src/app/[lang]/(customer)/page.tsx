@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 
-export default function Page() {
-  redirect("/restaurants");
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ lang: 'fr' | 'en' }>;
+}) {
+  const { lang } = await params;
+  redirect(`/${lang}/restaurants`);
 }
 
 

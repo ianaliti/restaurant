@@ -18,40 +18,36 @@ export default function CommandesPage() {
   const [restaurateurOrders, setRestaurateurOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    if (user?.id) {
-      loadRestaurateurOrders();
+    if (!user?.id) {
+      return;
     }
-    const interval = setInterval(() => {
-      if (user?.id) {
-        loadRestaurateurOrders();
-      }
-    }, 1000);
+
+    const loadOrders = () => {
+      const allOrders = getAllOrders();
+      
+      const restaurateurPlats = getPlatsByUserId(user.id);
+      const platIds = new Set(restaurateurPlats.map(p => {
+        const numId = Number(p.id);
+        return isNaN(numId) ? null : numId;
+      }).filter(id => id !== null) as number[]);
+      
+      const platNames = new Set(restaurateurPlats.map(p => p.name.toLowerCase()));
+
+      const filteredOrders = allOrders.filter(order => {
+        return order.items.some(item => 
+          platIds.has(item.id) || platNames.has(item.name.toLowerCase())
+        );
+      });
+
+      filteredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      setRestaurateurOrders(filteredOrders);
+    };
+
+    loadOrders();
+    const interval = setInterval(loadOrders, 1000);
     return () => clearInterval(interval);
-  }, [user?.id]);
-
-  const loadRestaurateurOrders = () => {
-    if (!user?.id) return;
-
-    const allOrders = getAllOrders();
-    
-    const restaurateurPlats = getPlatsByUserId(user.id);
-    const platIds = new Set(restaurateurPlats.map(p => {
-      const numId = Number(p.id);
-      return isNaN(numId) ? null : numId;
-    }).filter(id => id !== null) as number[]);
-    
-    const platNames = new Set(restaurateurPlats.map(p => p.name.toLowerCase()));
-
-    const filteredOrders = allOrders.filter(order => {
-      return order.items.some(item => 
-        platIds.has(item.id) || platNames.has(item.name.toLowerCase())
-      );
-    });
-
-    filteredOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    setRestaurateurOrders(filteredOrders);
-  };
+  }, [user?.id, getPlatsByUserId]);
 
   const getOrderItemsForRestaurateur = (order: Order) => {
     if (!user?.id) return [];

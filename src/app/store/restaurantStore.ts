@@ -53,7 +53,7 @@ export const useRestaurantStore = create<RestaurantState>()(
             ? restaurantData as RestaurantData
             : {
                 ...restaurantData,
-                id: Date.now(), 
+                id: Math.floor(Math.random() * 1000000000) + 1000000,
               };
           
           if (existingIndex >= 0) {

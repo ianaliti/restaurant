@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { } from 'react';
 import { usePlatStore } from '@/app/store/platStore';
 import { useRestaurantStore } from '@/app/store/restaurantStore';
 import { PlatDetail } from './PlatDetail';
@@ -13,29 +13,29 @@ interface PlatDetailWrapperProps {
   lang: 'fr' | 'en';
 }
 
-export function PlatDetailWrapper({ serverResult, id, lang }: PlatDetailWrapperProps) {
+export function PlatDetailWrapper({ serverResult, id: _id, lang }: PlatDetailWrapperProps) {
   const params = useParams();
   const userPlats = usePlatStore((state) => state.plats);
   const restaurants = useRestaurantStore((state) => state.restaurants);
-  const [platData, setPlatData] = useState<{ plat: PlatData; restaurantId: number } | null>(serverResult);
-
-  useEffect(() => {
-    if (!serverResult && params.id) {
-      const idString = typeof params.id === 'string' ? params.id : params.id.toString();
-      const userPlat = userPlats.find((p) => p.id === idString || Number(p.id) === Number(idString));
-      
-      if (userPlat) {
-        const restaurant = restaurants.find((r) => r.userId === userPlat.userId);
-        
-        if (restaurant) {
-          setPlatData({
-            plat: userPlat,
-            restaurantId: restaurant.id,
-          });
-        }
+  
+  const platData = (() => {
+    if (serverResult) return serverResult;
+    if (!params.id) return null;
+    
+    const idString = typeof params.id === 'string' ? params.id : params.id.toString();
+    const userPlat = userPlats.find((p) => p.id === idString || Number(p.id) === Number(idString));
+    
+    if (userPlat) {
+      const restaurant = restaurants.find((r) => r.userId === userPlat.userId);
+      if (restaurant) {
+        return {
+          plat: userPlat,
+          restaurantId: restaurant.id,
+        };
       }
     }
-  }, [serverResult, params.id, userPlats, restaurants]);
+    return null;
+  })();
 
   if (!platData) {
     return (
