@@ -122,8 +122,7 @@ test.describe('Admin Journey - Manage Restaurateurs', () => {
     const addRestaurateurLink = page.locator('a[href*="/new-restaurant"]');
     if (await addRestaurateurLink.isVisible()) {
       await addRestaurateurLink.click();
-      await page.waitForURL(/\/new-restaurant/);
-      await expect(page).toHaveURL(/\/new-restaurant/);
+      await page.waitForURL('**/new-restaurant');
     }
   });
 });
@@ -134,31 +133,25 @@ test.describe('Restaurateur Journey - Manage Plats and View Orders', () => {
 
     await page.fill('input[type="email"]', 'restaurateur@restodigital.com');
     await page.fill('input[type="password"]', 'resto123');
-    
-    const loginButton = page.locator('button[type="submit"]').or(page.getByRole('button', { name: /Connexion|Login/ }));
-    await loginButton.click();
+    await page.locator('button[type="submit"]').click();
 
-    await page.waitForURL(/\/restaurateur/, { timeout: 15000 });
-
-    await expect(page).toHaveURL(/\/restaurateur/);
+    await page.waitForURL('**/restaurateur');
 
     const platsLink = page.locator('a[href*="/plats"]').first();
     if (await platsLink.isVisible()) {
       await platsLink.click();
-      await page.waitForURL(/\/plats/);
+      await page.waitForURL('**/plats');
 
       const addPlatLink = page.locator('a[href*="/new-plat"]').first();
       if (await addPlatLink.isVisible()) {
         await addPlatLink.click();
-        await page.waitForURL(/\/new-plat/);
-        await expect(page).toHaveURL(/\/new-plat/);
+        await page.waitForURL('**/new-plat');
       }
 
       const ordersLink = page.locator('a[href*="/commandes"]').first();
       if (await ordersLink.isVisible()) {
         await ordersLink.click();
-        await page.waitForURL(/\/commandes/);
-        await expect(page).toHaveURL(/\/commandes/);
+        await page.waitForURL('**/commandes');
       }
     }
   });

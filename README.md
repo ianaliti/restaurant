@@ -26,7 +26,7 @@ resto-digital/
 │   ├── lib/             # Utilities and data functions
 │   ├── types/           # TypeScript types
 │   └── mock-data/       # Mock data
-└── tests/               # E2E tests
+└── e2e/                 # E2E tests
 ```
 
 ## Roles
