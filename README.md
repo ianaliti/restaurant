@@ -1,5 +1,7 @@
 # Resto Digital
 
+![CI/CD Status](https://github.com/ianaliti/restaurant/actions/workflows/ci.yml/badge.svg)
+
 Resto Digital it's a simple site for ordering dishes. Customers can select restaurants from the list and then order them. The site support 3 different roles: admin who can manage restaurateurs, restaurateur who can manage his restaurant and plats, and customer who can browse restaurants, add plats to cart and make orders. 
 
 The site use Next.js 16 with App Router for server-side rendering and better SEO. We use Zustand for state management with 6 stores to manage authentication, cart, orders, restaurants, plats and users. For styling we use Tailwind CSS. The site is also a Progressive Web App which means it can be installed on devices and work offline. We also add accessibility features like skip links, ARIA attributes and semantic HTML for better user experience. 

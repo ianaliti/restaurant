@@ -47,7 +47,7 @@ export const mockPlats: PlatData[] = [
 		userId: 'mock-resto-1',
 		name: 'Osso Buco',
 		price: 34.0,
-		image: 'https://images.unsplash.com/photo-1547424850-26228a17e42b',
+		image: 'https://plus.unsplash.com/premium_photo-1673581152308-591c1645be02?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 	},
 	{
 		id: '201',
