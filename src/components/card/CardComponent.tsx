@@ -7,24 +7,40 @@ import {
 } from "@/components/ui/card";
 
 interface CardProps {
-  id?: number;
+  id?: string;
   name: string;
   image: string;
   address?: string;
   description?: string;
 }
 
+function isValidImageSrc(src: string): boolean {
+  if (!src) return false;
+  if (src.startsWith('/')) return true;
+  try {
+    new URL(src);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const CardComponent = ({ name, image, address }: CardProps) => {
+  const validSrc = isValidImageSrc(image);
   return (
     <Card className="relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden shadow-md cursor-pointer group p-0 border-0">
       <CardHeader className="p-0 h-full">
-        <Image
-          src={image}
-          alt={address ? `Image du restaurant ${name} situé à ${address}` : `Image du restaurant ${name}`}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+        {validSrc ? (
+          <Image
+            src={image}
+            alt={address ? `Image du restaurant ${name} situé à ${address}` : `Image du restaurant ${name}`}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-orange-200 to-orange-400 transition-transform duration-300 group-hover:scale-105" />
+        )}
       </CardHeader>
       <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
       <CardContent className="absolute bottom-0 left-0 p-4 text-white z-10">

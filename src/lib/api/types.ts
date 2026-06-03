@@ -1,6 +1,5 @@
 import type { ApiResponse } from '@/types/utils.type';
-import type { RestaurantData } from '@/app/store/restaurantStore';
-import type { PlatData } from '@/app/store/platStore';
+import type { RestaurantData, PlatData } from '@/types/restaurants.type';
 import type { User } from '@/types/user.type';
 
 export type RestaurantsApiResponse = ApiResponse<RestaurantData[]>;

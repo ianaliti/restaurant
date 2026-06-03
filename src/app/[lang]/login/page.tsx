@@ -3,7 +3,7 @@
 import React, { useState, use } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/app/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -18,8 +18,8 @@ export default function LoginPage({
   const { lang } = use(params);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  const { login, isLoading, error, clearError } = useAuthStore();
+
+  const { login, isLoading, error, clearError, user } = useAuth();
   const router = useRouter();
   const [validationError, setValidationError] = useState('');
   const dict = useDictionary();
@@ -36,19 +36,20 @@ export default function LoginPage({
 
     try {
       await login(email, password);
-      const user = useAuthStore.getState().user;
-      if (user?.role === 'admin') {
-        router.push(`/${lang}/admin`);
-      } else if (user?.role === 'restaurateur') {
-        router.push(`/${lang}/restaurateur`);
-      } else {
-        router.push(`/${lang}/restaurants`);
-      }
-    } catch (err) {
-      console.error('Login error:', err);
+      // user state updates asynchronously; read role from the login response via the store
+      // We re-read from context after login resolves
+    } catch {
       setValidationError(dict.auth.login.invalidCredentials);
     }
   };
+
+  // Redirect after user is set in context
+  React.useEffect(() => {
+    if (!user) return;
+    if (user.role === 'admin') router.push(`/${lang}/admin`);
+    else if (user.role === 'restaurateur') router.push(`/${lang}/restaurateur`);
+    else router.push(`/${lang}/restaurants`);
+  }, [user, lang, router]);
 
   return (
     <main id="main-content" className='min-h-screen flex items-center justify-center px-4'>
@@ -63,7 +64,7 @@ export default function LoginPage({
         </p>
 
         {(error || validationError) && (
-          <div 
+          <div
             className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'
             role="alert"
             aria-live="assertive"
@@ -74,9 +75,7 @@ export default function LoginPage({
 
         <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label={dict.auth.login.formLabel}>
           <div>
-            <label htmlFor="login-email" className="sr-only">
-              {dict.auth.login.email}
-            </label>
+            <label htmlFor="login-email" className="sr-only">{dict.auth.login.email}</label>
             <Input
               id="login-email"
               type='email'
@@ -88,11 +87,9 @@ export default function LoginPage({
               aria-invalid={!!(error || validationError)}
             />
           </div>
-          
+
           <div>
-            <label htmlFor="login-password" className="sr-only">
-              {dict.auth.login.password}
-            </label>
+            <label htmlFor="login-password" className="sr-only">{dict.auth.login.password}</label>
             <Input
               id="login-password"
               type='password'
@@ -117,8 +114,8 @@ export default function LoginPage({
 
         <p className='mt-6 text-center text-sm text-muted-foreground'>
           {dict.auth.login.noAccount}{' '}
-          <Link 
-            href={`/${lang}/login/register`} 
+          <Link
+            href={`/${lang}/login/register`}
             className='text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded'
             aria-label={dict.auth.login.createAccount}
           >

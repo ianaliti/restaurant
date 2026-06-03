@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuthStore } from '@/app/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import type { UserRole } from '@/types/user.type';
 
 interface ProtectedRouteProps {
@@ -16,46 +16,16 @@ export default function ProtectedRoute({
   requiredRole,
   redirectTo,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const lang = pathname?.split('/')[1] || 'fr';
-  const defaultRedirect = `/${lang}/restaurants`;
-  const [mounted] = useState(true);
-  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (isLoading) return;
 
-    const checkHydration = () => {
-      if (typeof window === 'undefined') {
-        setIsChecking(false);
-        return;
-      }
-
-      try {
-        const stored = localStorage.getItem('auth-storage');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setTimeout(() => {
-            setIsChecking(false);
-          }, 100);
-        } else {
-          setIsChecking(false);
-        }
-      } catch {
-        setIsChecking(false);
-      }
-    };
-
-    checkHydration();
-  }, [mounted]);
-
-  useEffect(() => {
-    if (!mounted || isChecking) return;
     if (!isAuthenticated) {
-      const targetPath = redirectTo || defaultRedirect;
-      router.push(targetPath);
+      router.push(redirectTo ?? `/${lang}/login`);
       return;
     }
 
@@ -63,12 +33,11 @@ export default function ProtectedRoute({
       const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
       if (user && !roles.includes(user.role)) {
         router.push(`/${lang}/restaurants`);
-        return;
       }
     }
-  }, [mounted, isChecking, isAuthenticated, user, requiredRole, redirectTo, router, defaultRedirect, lang]);
+  }, [isLoading, isAuthenticated, user, requiredRole, redirectTo, router, lang]);
 
-  if (!mounted || isChecking) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-muted-foreground">Chargement...</div>
@@ -76,17 +45,12 @@ export default function ProtectedRoute({
     );
   }
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!isAuthenticated) return null;
 
   if (requiredRole) {
     const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-    if (user && !roles.includes(user.role)) {
-      return null;
-    }
+    if (user && !roles.includes(user.role)) return null;
   }
 
   return <>{children}</>;
 }
-

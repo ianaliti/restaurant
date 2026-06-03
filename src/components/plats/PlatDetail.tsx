@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/app/store/cartStore';
-import { useAuthStore } from '@/app/store/authStore';
+import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LazyToast as Toast } from '@/components/ui/LazyComponents';
@@ -12,20 +12,23 @@ import { useDictionary } from '@/components/i18n/DictionaryProvider';
 import type { Plat } from '@/types/restaurants.type';
 
 interface PlatDetailProps {
-  plat: Plat & { restaurantId: number };
+  plat: Plat & { restaurantId: string };
   lang: 'fr' | 'en';
 }
 
 export function PlatDetail({ plat, lang }: PlatDetailProps) {
   const dict = useDictionary();
-  const addItem = useCartStore((state) => state.addItem);
-  const { user } = useAuthStore();
+  const { addItem } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
 
   const handleAddToCart = () => {
-    const userId = user?.id || 'guest';
-    addItem(plat, userId);
+    if (!user) {
+      router.push(`/${lang}/login`);
+      return;
+    }
+    addItem(plat);
     setShowToast(true);
   };
 
@@ -43,35 +46,20 @@ export function PlatDetail({ plat, lang }: PlatDetailProps) {
         </div>
         <div className="flex flex-col gap-4">
           <h1 className="text-2xl font-bold">{plat.name}</h1>
-          <p
-            className="text-primary font-semibold"
-            aria-label={`${dict.common.price}: ${plat.price.toFixed(2)}`}
-          >
+          <p className="text-primary font-semibold">
             {`$${plat.price.toFixed(2)}`}
           </p>
-          <Button
-            className="mt-2 h-12 rounded-3xl"
-            onClick={handleAddToCart}
-            aria-label={`${dict.common.add} ${plat.name} ${dict.common.toCart}`}
-          >
+          <Button className="mt-2 h-12 rounded-3xl" onClick={handleAddToCart} aria-label={`${dict.common.add} ${plat.name} ${dict.common.toCart}`}>
             {dict.common.add} {dict.common.toCart}
           </Button>
-          <Button
-            onClick={() => router.push(`/${lang}/cart`)}
-            variant="secondary"
-            aria-label={dict.common.viewCart}
-          >
+          <Button onClick={() => router.push(`/${lang}/cart`)} variant="secondary" aria-label={dict.common.viewCart}>
             <Link href={`/${lang}/cart`}>{dict.common.viewCart}</Link>
           </Button>
         </div>
       </div>
       {showToast && (
-        <Toast
-          message={`${plat.name} ${dict.common.addedToCartSuccess}`}
-          onClose={() => setShowToast(false)}
-        />
+        <Toast message={`${plat.name} ${dict.common.addedToCartSuccess}`} onClose={() => setShowToast(false)} />
       )}
     </>
   );
 }
-

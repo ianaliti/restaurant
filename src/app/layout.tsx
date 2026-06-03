@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "@/components/auth/AuthProvider";
+import { AppProviders } from "@/providers/AppProviders";
 import { SkipLink } from "@/components/accessibility/SkipLink";
 import { LangUpdater } from "@/components/i18n/LangUpdater";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
@@ -27,16 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <LangUpdater />
         <SkipLink />
         <ServiceWorkerRegistration />
-        <AuthProvider>
+        <AppProviders>
           {children}
-        </AuthProvider>
+        </AppProviders>
       </body>
     </html>
   );

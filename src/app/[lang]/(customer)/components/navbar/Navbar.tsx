@@ -1,22 +1,22 @@
 'use client';
 
 import Link from "next/link";
-import { useAuthStore } from "@/app/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter, usePathname } from "next/navigation";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 
 const Navbar = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const dict = useDictionary();
-  
+
   const lang = pathname?.split('/')[1] || 'fr';
 
   const handleLogout = () => {
-    logout();            
-    router.push(`/${lang}/restaurants`); 
+    logout();
+    router.push(`/${lang}/restaurants`);
   };
 
   return (
@@ -31,8 +31,8 @@ const Navbar = () => {
         </Link>
         <ul className="flex items-center gap-6 text-sm list-none" role="list">
           <li>
-            <Link 
-              className="hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2" 
+            <Link
+              className="hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded px-2"
               href={`/${lang}/cart`}
               aria-label={dict.common.viewCart}
             >

@@ -1,44 +1,26 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import CardComponent from '@/components/card/CardComponent';
 import Link from 'next/link';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { useDictionary } from '@/components/i18n/DictionaryProvider';
-import { usePlatStore } from '@/app/store/platStore';
-import { findByUserId } from '@/types/utils.type';
-import type { PlatData } from '@/app/store/platStore';
+import type { PlatData } from '@/types/restaurants.type';
 
 interface RestaurantPlatsListProps {
   plats: PlatData[];
-  restaurantUserId: string;
   lang: 'fr' | 'en';
 }
 
-export function RestaurantPlatsList({ plats, restaurantUserId, lang }: RestaurantPlatsListProps) {
+export function RestaurantPlatsList({ plats, lang }: RestaurantPlatsListProps) {
   const dict = useDictionary();
   const [searchQuery, setSearchQuery] = useState('');
-  const userPlats = usePlatStore((state) => state.plats);
 
-  const restaurantPlats = useMemo(() => {
-    const allPlats = [...plats, ...userPlats];
-    const allRestaurantPlats = findByUserId(allPlats, restaurantUserId)
-      .map(plat => ({
-        id: Number(plat.id) || parseInt(plat.id, 10) || 0,
-        name: plat.name,
-        price: plat.price,
-        image: plat.image,
-      }));
-
-    if (!searchQuery.trim()) {
-      return allRestaurantPlats;
-    }
-
+  const displayPlats = useMemo(() => {
+    if (!searchQuery.trim()) return plats;
     const query = searchQuery.toLowerCase().trim();
-    return allRestaurantPlats.filter((plat) =>
-      plat.name.toLowerCase().includes(query)
-    );
-  }, [plats, userPlats, restaurantUserId, searchQuery]);
+    return plats.filter((p) => p.name.toLowerCase().includes(query));
+  }, [plats, searchQuery]);
 
   return (
     <>
@@ -49,23 +31,19 @@ export function RestaurantPlatsList({ plats, restaurantUserId, lang }: Restauran
         onChange={setSearchQuery}
         ariaLabel={dict.common.searchPlat}
       />
-      {restaurantPlats.length === 0 ? (
+      {displayPlats.length === 0 ? (
         <div className='text-center py-12' role="status" aria-live="polite">
           <p className='text-muted-foreground'>
-            {searchQuery.trim() 
+            {searchQuery.trim()
               ? dict.restaurants.noPlatResults.replace('{{query}}', searchQuery)
               : dict.restaurants.noPlats}
           </p>
         </div>
       ) : (
         <section aria-label={dict.restaurants.platsAvailable} className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-          {restaurantPlats.map((plat) => (
+          {displayPlats.map((plat) => (
             <Link href={`/${lang}/plat/${plat.id}`} key={plat.id} aria-label={`${dict.restaurants.viewDetails} ${plat.name}`}>
-              <CardComponent
-                name={plat.name}
-                id={plat.id}
-                image={plat.image}
-              />
+              <CardComponent name={plat.name} id={plat.id} image={plat.image} />
             </Link>
           ))}
         </section>
@@ -73,4 +51,3 @@ export function RestaurantPlatsList({ plats, restaurantUserId, lang }: Restauran
     </>
   );
 }
-

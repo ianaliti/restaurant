@@ -10,24 +10,18 @@ export async function generateMetadata({
   params: Promise<{ lang: 'fr' | 'en'; id: string }>;
 }): Promise<Metadata> {
   const { lang, id } = await params;
-  const idNumber = Number(id);
-  const result = await getPlatWithRestaurant(idNumber);
+  const result = await getPlatWithRestaurant(id);
   const dict = await getDictionary(lang);
 
   if (!result) {
-    return {
-      title: dict.restaurants.title,
-    };
+    return { title: dict.restaurants.title };
   }
 
   const { plat } = result;
-
   return {
     title: `${plat.name} - ${plat.price}€ | Resto Digital`,
     description: `Découvrez ${plat.name} - ${plat.price}€. Commandez en ligne sur Resto Digital.`,
-    openGraph: {
-      images: [plat.image],
-    },
+    openGraph: { images: [plat.image] },
   };
 }
 
@@ -37,13 +31,12 @@ export default async function PlatDetailPage({
   params: Promise<{ lang: 'fr' | 'en'; id: string }>;
 }) {
   const { lang, id } = await params;
-  const idNumber = Number(id);
-  const result = await getPlatWithRestaurant(idNumber);
+  const result = await getPlatWithRestaurant(id);
 
   return (
     <main id="main-content" className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       <BackButton lang={lang} />
-      <PlatDetailWrapper serverResult={result} id={idNumber} lang={lang} />
+      <PlatDetailWrapper serverResult={result} id={id} lang={lang} />
     </main>
   );
 }

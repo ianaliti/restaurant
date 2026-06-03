@@ -1,50 +1,52 @@
 export interface Plat {
-  id: number;
+  id: string;
   name: string;
   price: number;
-  image: string;
+  image: string | null;
+  description: string | null;
+  category: string;
+  isAvailable: boolean;
 }
 
-export interface Restaurant {
-  id: number;
+/** Extended Plat shape — userId equals restaurantId */
+export interface PlatData extends Plat {
+  userId: string;
+}
+
+export interface RestaurantData {
+  id: string;
+  /** Equals the restaurant's DB id (same entity in the backend) */
+  userId: string;
   name: string;
-  description: string;
   address: string;
+  codePostal: string;
+  city: string;
+  email: string;
+  image: string | null;
+  description: string | null;
   phone: string;
-  website: string;
-  image: string;
+  website: string | null;
   cuisine: string;
-  rating: number;
-  priceRange: string;
-  openingHours: string;
-  deliveryTime: string;
-  minimumOrder: number;
-  deliveryFee: number;
-  isDeliveryAvailable: boolean;
-  isParkingAvailable: boolean;
-  isReservationRequired: boolean;
-}
-
-export interface RestaurantWithPlats extends Restaurant {
-  plats: Plat[];
-  quantity?: number;
 }
 
 export interface Profile {
-  id: number;
+  id: string;
   username: string;
   email: string;
 }
 
 export interface CartItem extends Plat {
   quantity: number;
-  restaurantId: number;
+  restaurantId: string;
 }
 
 export interface Order {
-  id: number;
+  id: string;
   userId: string;
+  restaurantId: string;
   date: string;
   total: number;
+  status?: string;
+  deliveryAddress: string;
   items: CartItem[];
 }

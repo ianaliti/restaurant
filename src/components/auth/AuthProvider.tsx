@@ -1,6 +1,2 @@
-'use client';
-
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-
+// Shim — real implementation lives in src/providers/AuthProvider.tsx
+export { AuthProvider as default, useAuth } from '@/providers/AuthProvider';

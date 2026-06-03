@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/app/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { LazyMessage as Message } from '@/components/ui/LazyComponents';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { useDictionary } from '@/components/i18n/DictionaryProvider';
@@ -14,24 +14,27 @@ export default function ProfilePage({
   params: Promise<{ lang: 'fr' | 'en' }>;
 }) {
   const { lang: _lang } = use(params);
-  const { user, updateProfile, isLoading, error } = useAuthStore();
-  const [name, setName] = useState(() => user?.name || '');
-  const [email, setEmail] = useState(() => user?.email || '');
+  const { user, updateProfile, isLoading, error } = useAuth();
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [showSuccess, setShowSuccess] = useState(false);
   const dict = useDictionary();
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+      setEmail(user.email);
+    }
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!name || !email) {
-      return;
-    }
-
+    if (!name || !email) return;
     try {
       await updateProfile(name, email);
       setShowSuccess(true);
-    } catch (err) {
-      console.error('Update error:', err);
+    } catch {
+      // error is shown via context
     }
   };
 
@@ -40,9 +43,9 @@ export default function ProfilePage({
       <main id="main-content" className='max-w-lg mx-auto px-4 sm:px-6 py-8 flex justify-between flex-col'>
         <div className='text-3xl flex justify-center mb-8 font-bold'>{dict.profile.welcome.replace('{{name}}', user?.name || '')}</div>
         <h1 className='text-xl mb-6'>{dict.profile.title}</h1>
-      
+
         {error && (
-          <div 
+          <div
             className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'
             role="alert"
             aria-live="assertive"
@@ -53,9 +56,7 @@ export default function ProfilePage({
 
         <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label="Formulaire de mise à jour du profil">
           <div>
-            <label htmlFor="profile-name" className="sr-only">
-              {dict.profile.name}
-            </label>
+            <label htmlFor="profile-name" className="sr-only">{dict.profile.name}</label>
             <Input
               id="profile-name"
               placeholder={dict.profile.name}
@@ -66,9 +67,7 @@ export default function ProfilePage({
             />
           </div>
           <div>
-            <label htmlFor="profile-email" className="sr-only">
-              {dict.profile.email}
-            </label>
+            <label htmlFor="profile-email" className="sr-only">{dict.profile.email}</label>
             <Input
               id="profile-email"
               type='email'
@@ -80,7 +79,7 @@ export default function ProfilePage({
             />
           </div>
           <div className='flex justify-center align-center'>
-            <Button 
+            <Button
               type='submit'
               className='mt-6 h-12 rounded-3xl px-8'
               disabled={isLoading}

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState, use, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/app/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useDictionary } from '@/components/i18n/DictionaryProvider';
@@ -19,13 +19,18 @@ export default function RegisterPage({
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'customer' | 'restaurateur'>('customer');
-  
-  const { register, isLoading, error, clearError } = useAuthStore();
+
+  const { register, isLoading, error, clearError, user } = useAuth();
   const router = useRouter();
   const dict = useDictionary();
-
   const [validationError, setValidationError] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+    if (user.role === 'restaurateur') router.push(`/${lang}/restaurateur`);
+    else if (user.role === 'admin') router.push(`/${lang}/admin`);
+    else router.push(`/${lang}/restaurants`);
+  }, [user, lang, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,18 +53,8 @@ export default function RegisterPage({
     }
 
     try {
-      await register(email, password, name, role);
-      const user = useAuthStore.getState().user;
-      
-      if (user?.role === 'restaurateur') {
-        router.push(`/${lang}/restaurateur`);
-      } else if (user?.role === 'admin') {
-        router.push(`/${lang}/admin`);
-      } else {
-        router.push(`/${lang}/restaurants`);
-      }
+      await register(email, password, name);
     } catch (err) {
-      console.error('Registration error:', err);
       setValidationError(err instanceof Error ? err.message : dict.auth?.register?.emailTaken || 'Cet email est déjà utilisé');
     }
   };
@@ -76,7 +71,7 @@ export default function RegisterPage({
         </p>
 
         {(error || validationError) && (
-          <div 
+          <div
             className='mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm'
             role="alert"
             aria-live="assertive"
@@ -87,9 +82,7 @@ export default function RegisterPage({
 
         <form onSubmit={handleSubmit} className='flex flex-col gap-4' aria-label={dict.auth?.register?.formLabel || 'Formulaire de création de compte'}>
           <div>
-            <label htmlFor="register-name" className="sr-only">
-              {dict.auth?.register?.fullName || 'Nom complet'}
-            </label>
+            <label htmlFor="register-name" className="sr-only">{dict.auth?.register?.fullName || 'Nom complet'}</label>
             <Input
               id="register-name"
               placeholder={dict.auth?.register?.fullName || 'Nom complet'}
@@ -100,11 +93,9 @@ export default function RegisterPage({
               aria-invalid={!!(error || validationError)}
             />
           </div>
-          
+
           <div>
-            <label htmlFor="register-email" className="sr-only">
-              {dict.auth?.register?.email || 'Email'}
-            </label>
+            <label htmlFor="register-email" className="sr-only">{dict.auth?.register?.email || 'Email'}</label>
             <Input
               id="register-email"
               type='email'
@@ -116,11 +107,9 @@ export default function RegisterPage({
               aria-invalid={!!(error || validationError)}
             />
           </div>
-          
+
           <div>
-            <label htmlFor="register-password" className="sr-only">
-              {dict.auth?.register?.password || 'Mot de passe'}
-            </label>
+            <label htmlFor="register-password" className="sr-only">{dict.auth?.register?.password || 'Mot de passe'}</label>
             <Input
               id="register-password"
               type='password'
@@ -133,11 +122,9 @@ export default function RegisterPage({
               aria-invalid={!!(error || validationError)}
             />
           </div>
-          
+
           <div>
-            <label htmlFor="register-confirm-password" className="sr-only">
-              {dict.auth?.register?.confirmPassword || 'Confirmer le mot de passe'}
-            </label>
+            <label htmlFor="register-confirm-password" className="sr-only">{dict.auth?.register?.confirmPassword || 'Confirmer le mot de passe'}</label>
             <Input
               id="register-confirm-password"
               type='password'
@@ -162,8 +149,8 @@ export default function RegisterPage({
 
         <p className='mt-6 text-center text-sm text-muted-foreground'>
           {dict.auth?.register?.hasAccount || 'Déjà un compte?'}{' '}
-          <Link 
-            href={`/${lang}/login`} 
+          <Link
+            href={`/${lang}/login`}
             className='text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded'
             aria-label={dict.auth?.register?.login || 'Se connecter'}
           >
@@ -174,4 +161,3 @@ export default function RegisterPage({
     </main>
   );
 }
-

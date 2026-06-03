@@ -9,6 +9,8 @@ interface ConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   variant?: 'danger' | 'warning' | 'default';
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export function ConfirmDialog({
@@ -20,6 +22,8 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
   variant = 'default',
+  isLoading = false,
+  error = null,
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
 
@@ -40,20 +44,25 @@ export function ConfirmDialog({
       <div className='bg-white rounded p-6 max-w-md w-11/12 shadow-2xl'>
         <h3 id='confirm-title' className='text-xl font-bold mb-3'>{title}</h3>
         <p id='confirm-description' className='mb-5'>{message}</p>
+        {error && (
+          <p className='mb-4 text-sm text-red-600 bg-red-50 rounded px-3 py-2'>{error}</p>
+        )}
         <div className='flex gap-3'>
           <button
             onClick={onCancel}
-            className='flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400'
+            disabled={isLoading}
+            className='flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed'
             aria-label={cancelText}
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 ${getButtonColor()} text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2`}
+            disabled={isLoading}
+            className={`flex-1 ${getButtonColor()} text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed`}
             aria-label={confirmText}
           >
-            {confirmText}
+            {isLoading ? '...' : confirmText}
           </button>
         </div>
       </div>

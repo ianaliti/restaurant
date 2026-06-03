@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuthStore } from "@/app/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export default function RestoSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuthStore();
+  const { logout } = useAuth();
   const dict = useDictionary();
 
   const lang = pathname?.split('/')[1] || 'fr';
@@ -33,36 +33,33 @@ export default function RestoSidebar() {
           <Link
             href={dashboardHref}
             className={`text-sm px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 inline-flex items-center justify-center ${
-              isDashboardActive 
-                ? "bg-primary text-white" 
+              isDashboardActive
+                ? "bg-primary text-white"
                 : "hover:bg-gray-100 bg-white border border-gray-300"
             }`}
             aria-current={isDashboardActive ? "page" : undefined}
-            aria-label={`${dict.common.back} ${dict.restaurateur.dashboard}`}
           >
             {dict.restaurateur.dashboard}
           </Link>
           <Link
             href={platsHref}
             className={`text-sm px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 inline-flex items-center justify-center ${
-              isPlatsActive 
-                ? "bg-primary text-white" 
+              isPlatsActive
+                ? "bg-primary text-white"
                 : "hover:bg-gray-100 bg-white border border-gray-300"
             }`}
             aria-current={isPlatsActive ? "page" : undefined}
-            aria-label={`${dict.common.back} ${dict.restaurateur.plats}`}
           >
             {dict.restaurateur.plats}
           </Link>
           <Link
             href={commandesHref}
             className={`text-sm px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 inline-flex items-center justify-center ${
-              isCommandesActive 
-                ? "bg-primary text-white" 
+              isCommandesActive
+                ? "bg-primary text-white"
                 : "hover:bg-gray-100 bg-white border border-gray-300"
             }`}
             aria-current={isCommandesActive ? "page" : undefined}
-            aria-label={`${dict.common.back} ${dict.restaurateur.orders}`}
           >
             {dict.restaurateur.orders}
           </Link>
@@ -72,7 +69,7 @@ export default function RestoSidebar() {
         <div className="flex justify-center">
           <LanguageSwitcher />
         </div>
-        <Button 
+        <Button
           onClick={handleLogout}
           variant={"outline"}
           aria-label={dict.common.logout}
@@ -84,5 +81,3 @@ export default function RestoSidebar() {
     </aside>
   );
 }
-
-

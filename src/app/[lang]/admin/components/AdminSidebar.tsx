@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuthStore } from "@/app/store/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language/LanguageSwitcher";
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
@@ -9,7 +9,7 @@ import { useDictionary } from "@/components/i18n/DictionaryProvider";
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuthStore();
+  const { logout } = useAuth();
   const dict = useDictionary();
 
   const lang = pathname?.split('/')[1] || 'fr';
@@ -29,12 +29,11 @@ export default function AdminSidebar() {
           <Link
             href={adminHref}
             className={`text-sm px-3 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 inline-flex items-center justify-center ${
-              isActive 
-                ? "bg-primary text-white" 
+              isActive
+                ? "bg-primary text-white"
                 : "hover:bg-gray-100 bg-white border border-gray-300"
             }`}
             aria-current={isActive ? 'page' : undefined}
-            aria-label={dict.common.goToRestaurantsPage}
           >
             {dict.common.restaurants}
           </Link>
@@ -44,7 +43,7 @@ export default function AdminSidebar() {
         <div className="flex justify-center">
           <LanguageSwitcher />
         </div>
-        <Button 
+        <Button
           onClick={handleLogout}
           variant={"outline"}
           aria-label={dict.common.logout}
@@ -56,5 +55,3 @@ export default function AdminSidebar() {
     </aside>
   );
 }
-
-
