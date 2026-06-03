@@ -11,11 +11,19 @@ const ROLE_MAP: Record<string, UserRole> = {
   ADMIN: 'admin',
 }
 
-const COOKIE_OPTIONS = {
+const ACCESS_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict' as const,
-  maxAge: 60 * 60 * 24 * 7,
+  maxAge: 60 * 15, // 15 minutes — matches JWT expiry
+  path: '/',
+}
+
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  maxAge: 60 * 60 * 24 * 7, // 7 days
   path: '/',
 }
 
@@ -50,6 +58,16 @@ async function buildUser(token: string): Promise<User> {
   }
 }
 
+async function doRefresh(refreshToken: string): Promise<{ token: string; refreshToken: string }> {
+  const res = await fetch(`${BACKEND}/api/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  })
+  if (!res.ok) throw new Error('Refresh failed')
+  return res.json()
+}
+
 export async function loginAction(email: string, password: string): Promise<{ user: User; token: string }> {
   const res = await fetch(`${BACKEND}/api/auth/login`, {
     method: 'POST',
@@ -60,9 +78,10 @@ export async function loginAction(email: string, password: string): Promise<{ us
     const err = await res.json().catch(() => ({}))
     throw new Error(err.detail || 'Invalid credentials')
   }
-  const { token } = await res.json()
+  const { token, refreshToken } = await res.json()
   const cookieStore = await cookies()
-  cookieStore.set('auth_token', token, COOKIE_OPTIONS)
+  cookieStore.set('auth_token', token, ACCESS_COOKIE_OPTIONS)
+  cookieStore.set('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS)
   const user = await buildUser(token)
   return { user, token }
 }
@@ -81,9 +100,10 @@ export async function registerAction(
     const err = await res.json().catch(() => ({}))
     throw new Error(err.detail || 'Registration failed')
   }
-  const { token } = await res.json()
+  const { token, refreshToken } = await res.json()
   const cookieStore = await cookies()
-  cookieStore.set('auth_token', token, COOKIE_OPTIONS)
+  cookieStore.set('auth_token', token, ACCESS_COOKIE_OPTIONS)
+  cookieStore.set('refresh_token', refreshToken, REFRESH_COOKIE_OPTIONS)
   if (name) {
     await fetch(`${BACKEND}/api/users/me`, {
       method: 'PATCH',
@@ -97,18 +117,63 @@ export async function registerAction(
 
 export async function logoutAction(): Promise<void> {
   const cookieStore = await cookies()
+  const refreshToken = cookieStore.get('refresh_token')?.value
+  if (refreshToken) {
+    await fetch(`${BACKEND}/api/auth/logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    }).catch(() => {})
+  }
   cookieStore.delete('auth_token')
+  cookieStore.delete('refresh_token')
+}
+
+// Called by apiClient when an API request returns 401.
+// Returns the new access token, or null if the session cannot be recovered.
+export async function refreshSessionAction(): Promise<string | null> {
+  const cookieStore = await cookies()
+  const refreshToken = cookieStore.get('refresh_token')?.value
+  if (!refreshToken) return null
+  try {
+    const { token, refreshToken: newRefreshToken } = await doRefresh(refreshToken)
+    cookieStore.set('auth_token', token, ACCESS_COOKIE_OPTIONS)
+    cookieStore.set('refresh_token', newRefreshToken, REFRESH_COOKIE_OPTIONS)
+    return token
+  } catch {
+    cookieStore.delete('auth_token')
+    cookieStore.delete('refresh_token')
+    return null
+  }
 }
 
 export async function getSessionAction(): Promise<{ user: User; token: string } | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get('auth_token')?.value
-  if (!token) return null
+
+  if (token) {
+    try {
+      const user = await buildUser(token)
+      return { user, token }
+    } catch {}
+    // Access token present but invalid/expired — fall through to refresh
+  }
+
+  const storedRefreshToken = cookieStore.get('refresh_token')?.value
+  if (!storedRefreshToken) {
+    cookieStore.delete('auth_token')
+    return null
+  }
+
   try {
-    const user = await buildUser(token)
-    return { user, token }
+    const { token: newToken, refreshToken: newRefreshToken } = await doRefresh(storedRefreshToken)
+    cookieStore.set('auth_token', newToken, ACCESS_COOKIE_OPTIONS)
+    cookieStore.set('refresh_token', newRefreshToken, REFRESH_COOKIE_OPTIONS)
+    const user = await buildUser(newToken)
+    return { user, token: newToken }
   } catch {
     cookieStore.delete('auth_token')
+    cookieStore.delete('refresh_token')
     return null
   }
 }
