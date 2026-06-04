@@ -96,7 +96,23 @@
     "noOrders": "Aucune commande pour le moment.",
     "order": "Commande",
     "date": "Date",
-    "total": "Total"
+    "total": "Total",
+    "status": {
+      "PENDING": "En attente",
+      "CONFIRMED": "Confirmée",
+      "PREPARING": "En préparation",
+      "READY": "Prête",
+      "DELIVERED": "Livrée",
+      "CANCELLED": "Annulée"
+    },
+    "nextStatus": {
+      "PENDING": "Confirmer",
+      "CONFIRMED": "En préparation",
+      "PREPARING": "Prête",
+      "READY": "Livrée"
+    },
+    "cancel": "Annuler la commande",
+    "updateStatus": "Mettre à jour le statut"
   },
   "profile": {
     "title": "Mon Profil",

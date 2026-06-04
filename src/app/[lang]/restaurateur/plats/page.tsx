@@ -8,6 +8,8 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import CardComponent from '@/components/card/CardComponent';
 import { useDictionary } from "@/components/i18n/DictionaryProvider";
+import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 export default function PlatsPage() {
   const { user } = useAuth();
@@ -16,8 +18,24 @@ export default function PlatsPage() {
   const lang = pathname?.split('/')[1] || 'fr';
   const dict = useDictionary();
 
-  // restaurantId = user.id for restaurateur accounts
-  const { dishes, isLoading } = useMyMenu(user?.id ?? '');
+  const { dishes, isLoading, removeDish } = useMyMenu(user?.id ?? '');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = async (e: React.MouseEvent, id: string, name: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm(`Supprimer "${name}" ?`)) return;
+    setDeletingId(id);
+    setDeleteError(null);
+    try {
+      await removeDish(id);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <ProtectedRoute requiredRole={["restaurateur", "admin"]}>
@@ -32,6 +50,12 @@ export default function PlatsPage() {
             {dict.restaurateur.addPlat}
           </Button>
         </div>
+
+        {deleteError && (
+          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm" role="alert">
+            {deleteError}
+          </div>
+        )}
 
         <section aria-label={dict.restaurateur.plats}>
           <h2 className="text-xl font-semibold mb-4">
@@ -52,9 +76,19 @@ export default function PlatsPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" role="list">
               {dishes.map((dish) => (
-                <Link href={`/${lang}/restaurateur/plats/${dish.id}`} key={dish.id} aria-label={`Voir les détails de ${dish.name}`}>
-                  <CardComponent name={dish.name} id={dish.id} image={dish.image} />
-                </Link>
+                <div key={dish.id} className="relative group">
+                  <Link href={`/${lang}/restaurateur/plats/${dish.id}`} aria-label={`Voir les détails de ${dish.name}`}>
+                    <CardComponent name={dish.name} id={dish.id} image={dish.image} />
+                  </Link>
+                  <button
+                    onClick={(e) => handleDelete(e, dish.id, dish.name)}
+                    disabled={deletingId === dish.id}
+                    aria-label={`Supprimer ${dish.name}`}
+                    className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 text-red-600 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 disabled:opacity-50"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               ))}
             </div>
           )}

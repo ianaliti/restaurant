@@ -96,7 +96,23 @@
     "noOrders": "No orders at the moment.",
     "order": "Order",
     "date": "Date",
-    "total": "Total"
+    "total": "Total",
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "PREPARING": "Preparing",
+      "READY": "Ready",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "nextStatus": {
+      "PENDING": "Confirm",
+      "CONFIRMED": "Preparing",
+      "PREPARING": "Ready",
+      "READY": "Delivered"
+    },
+    "cancel": "Cancel order",
+    "updateStatus": "Update status"
   },
   "profile": {
     "title": "My Profile",

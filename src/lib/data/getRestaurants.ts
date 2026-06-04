@@ -42,8 +42,8 @@ export async function getRestaurants(): Promise<RestaurantData[]> {
       cache: 'no-store',
     });
     if (res.ok) {
-      const data: BackendRestaurant[] = await res.json();
-      return Array.isArray(data) ? data.map(mapRestaurant) : mockRestaurants;
+      const json = await res.json();
+      return (json.data ?? [] as BackendRestaurant[]).map(mapRestaurant);
     }
   } catch (error) {
     console.error('Error fetching restaurants:', error);

@@ -24,14 +24,14 @@ export const apiFetch = async (
   const { refreshSessionAction } = await import('@/actions/auth')
 
   const buildHeaders = (token: string | null): Record<string, string> => ({
-    'Content-Type': 'application/json',
+    ...(options.body ? { 'Content-Type': 'application/json' } : {}),
     ...((options.headers as Record<string, string>) || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   })
 
   const response = await fetch(apiUrl(path), { ...options, headers: buildHeaders(memoryToken) })
 
-  if (response.status !== 401 || !memoryToken) {
+  if (response.status !== 401) {
     return response
   }
 

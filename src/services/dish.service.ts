@@ -4,7 +4,8 @@ import type { Plat } from '@/types/restaurants.type';
 export async function getDishesByRestaurantService(restaurantId: string): Promise<Plat[]> {
   const res = await fetch(apiUrl(`/api/restaurants/${restaurantId}/dishes`));
   if (!res.ok) throw new Error('Failed to fetch dishes');
-  return res.json();
+  const json = await res.json();
+  return json.data ?? [];
 }
 
 export async function getDishByIdService(id: string): Promise<Plat> {

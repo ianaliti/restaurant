@@ -33,8 +33,8 @@ async function fetchDishesForRestaurant(restaurantId: string): Promise<PlatData[
       { cache: 'no-store' }
     );
     if (!res.ok) return [];
-    const dishes: BackendDish[] = await res.json();
-    return Array.isArray(dishes) ? dishes.map(mapDish) : [];
+    const json = await res.json();
+    return (json.data ?? [] as BackendDish[]).map(mapDish);
   } catch {
     return [];
   }

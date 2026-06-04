@@ -9,8 +9,8 @@ type RestaurantUpdate = Partial<Pick<
 export async function getRestaurantsService(): Promise<RestaurantData[]> {
   const res = await fetch(apiUrl('/api/restaurants'));
   if (!res.ok) throw new Error('Failed to fetch restaurants');
-  const data = await res.json();
-  return Array.isArray(data) ? data.map(mapRestaurant) : [];
+  const json = await res.json();
+  return (json.data ?? []).map(mapRestaurant);
 }
 
 export async function getRestaurantByIdService(id: string): Promise<RestaurantData> {
